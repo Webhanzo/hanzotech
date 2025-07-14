@@ -1,28 +1,15 @@
 // src/app/admin/dashboard/products/add/page.tsx
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import ProductForm from '../_components/product-form';
 import { addProduct } from '@/lib/firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import type { Product } from '@/lib/types';
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'الاسم مطلوب' }),
-  description: z.string().min(10, { message: 'الوصف القصير مطلوب' }),
-  longDescription: z.string().min(20, { message: 'الوصف الطويل مطلوب' }),
-  price: z.coerce.number().min(0, { message: 'السعر يجب أن يكون رقمًا موجبًا' }),
-  image: z.string().url({ message: 'الرجاء إدخال رابط صورة صالح' }),
-  category: z.enum(['Laptops', 'Phones']),
-  condition: z.enum(['New', 'Used']),
-  featured: z.boolean().default(false),
-  featured2: z.boolean().default(false),
-});
-
-type ProductFormValues = z.infer<typeof formSchema>;
+// Omit the fields that are auto-generated or not part of the form
+type ProductFormValues = Omit<Product, 'id' | 'slug' | 'timestamp'>;
 
 export default function AddProductPage() {
   const router = useRouter();
