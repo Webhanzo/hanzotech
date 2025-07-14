@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const products = await getProducts();
-  const siteData = await getSiteData('home');
+  const siteData = await getSiteData();
 
   const featuredProducts = products.filter((p) => p.featured);
   const featuredProducts2 = products.filter((p) => p.featured2);

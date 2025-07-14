@@ -16,15 +16,31 @@ import { revalidatePath } from 'next/cache';
 import type { ContactMessage, Product, Order, CartItem } from '@/lib/types';
 import { db } from '@/lib/firebase';
 
-// Generic data fetcher
-export async function getSiteData(path: string): Promise<any> {
-    const docRef = doc(db, 'siteData', path);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        return docSnap.data();
+// Generic data fetcher for single document
+export async function getDocument(collectionName: string, docId: string): Promise<any> {
+    try {
+        const docRef = doc(db, collectionName, docId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data();
+        }
+    } catch (e) {
+        console.error(`Error fetching document ${collectionName}/${docId}:`, e);
     }
     return null;
 }
+
+// Fetch all site data from the 'site' collection
+export async function getSiteData(): Promise<any> {
+    const homeData = await getDocument('site', 'home');
+    // Ensure we have default values to prevent crashes if data is missing
+    return {
+        homeImage: homeData?.homeImage || "https://placehold.co/1920x1080/1d3557/ffffff?text=Hero",
+        featuredImages: homeData?.featuredImages || [],
+        featuredImages2: homeData?.featuredImages2 || [],
+    };
+}
+
 
 // Products
 export async function getProducts(): Promise<Product[]> {
@@ -34,10 +50,11 @@ export async function getProducts(): Promise<Product[]> {
       ({
         id: doc.id,
         ...doc.data(),
-        // Ensure price is a number, default to 0 if not present or invalid
+        slug: doc.data().slug || doc.id,
         price: Number(doc.data().price) || 0,
       } as Product)
   );
+  // Sort by timestamp if it exists, otherwise no specific order
   return products.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 }
 
@@ -83,14 +100,16 @@ export async function addMessage(
 
 export async function getMessages(): Promise<ContactMessage[]> {
   const snapshot = await getDocs(collection(db, 'messages'));
-  return snapshot.docs.map(
-    (doc) =>
-      ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-      } as ContactMessage)
-  );
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    // Firebase timestamps need to be converted to Date objects
+    const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt || Date.now());
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: createdAt,
+    } as ContactMessage;
+  });
 }
 
 

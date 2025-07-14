@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { getDocument } from '@/lib/firebase/firestore';
 
 type SpecialAdData = {
     image: string;
@@ -19,21 +20,17 @@ export default function SpecialAd() {
   const [adData, setAdData] = useState<SpecialAdData | null>(null);
 
   useEffect(() => {
-    // In a real app, you would fetch this from your database
-    const fetchedAdData: SpecialAdData = {
-        image: "https://scontent.famm2-3.fna.fbcdn.net/v/t39.30808-6/483983657_655510334001880_118447396326113016_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=833d8c&_nc_ohc=OgMY2DDRr2cQ7kNvgF_TnO5&_nc_oc=AdnCPanLd5sl0bG3wPQ_wQlt0GXZ025B7g-B1d5u_ukAXcGINwHBVYy9FDMimcgUl9k&_nc_zt=23&_nc_ht=scontent.famm2-3.fna&_nc_gid=KJrkanJvNeeeW-NzdVuWug&oh=00_AYGK1VFdtploQNV7G6QZXTKh5Ttc3FhoNqzyUGvEc0CZxA&oe=67E671E1",
-        link: "#",
-        text: "عروض خاصة!",
-        visible: true // Control visibility from DB
-    };
-    setAdData(fetchedAdData);
-
-    if (fetchedAdData.visible) {
-        const timer = setTimeout(() => {
-            setIsVisible(true);
-        }, 2000); 
-        return () => clearTimeout(timer);
+    async function fetchAdData() {
+        const data = await getDocument('site', 'specialAd');
+        if (data && data.visible) {
+            setAdData(data);
+            const timer = setTimeout(() => {
+                setIsVisible(true);
+            }, 2000); 
+            return () => clearTimeout(timer);
+        }
     }
+    fetchAdData();
   }, []);
 
   if (!isVisible || !adData) {

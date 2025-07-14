@@ -1,17 +1,18 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, Phone } from 'lucide-react';
+import { getDocument } from '@/lib/firebase/firestore';
 
-export default function Footer() {
-  const footerData = {
+export default async function Footer() {
+  const footerData = await getDocument('site', 'footer') || {
     about: "HANZO - تقنية متميزة لأسلوب حياتك",
-    facebook: "https://www.facebook.com/HanzoLaptops",
-    instagram: "https://www.instagram.com/hanzo_laptop/",
-    logo: "https://res.cloudinary.com/dgx08zujs/image/upload/v1742782985/476020761_630805223139058_9077737273465101288_n-removebg-preview_woaols.png",
-    phone1: "0776342240",
-    phone2: "0776153357",
-    whatsapp: "https://wa.link/wxmlue"
-  }
+    facebook: "#",
+    instagram: "#",
+    logo: "https://placehold.co/50x50.png",
+    phone1: "N/A",
+    phone2: "N/A",
+    whatsapp: "#"
+  };
 
   return (
     <footer className="bg-secondary text-secondary-foreground">
