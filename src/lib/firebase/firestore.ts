@@ -25,12 +25,7 @@ export async function getDocument(collectionName: string, docId: string): Promis
         const docRef = doc(db, collectionName, docId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-            const data = docSnap.data();
-            // This handles nested objects that might be returned, which is your case for 'footer'
-            if (docId in data) {
-                return data[docId];
-            }
-            return { id: docSnap.id, ...data };
+            return { id: docSnap.id, ...docSnap.data() };
         }
     } catch (e) {
         console.error(`Error fetching document ${collectionName}/${docId}:`, e);
