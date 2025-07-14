@@ -42,11 +42,7 @@ export async function getFooterData() {
 export async function getHomeImage() {
     return getData<string>('homeImage');
 }
-  
-export async function getFeaturedImages(key: 'featuredImages' | 'featuredImages2') {
-    return getData<string[]>(key);
-}
-  
+    
 export async function getSpecialAd() {
     return getData<{ image: string; link: string; text: string; visible: boolean; }>('specialAds');
 }
@@ -56,7 +52,7 @@ export async function getSpecialAd() {
 
 function processProduct(productData: any, id: string): Product {
     const price = Number(productData.price) || 0;
-    const slug = productData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug = (productData.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     return {
         ...productData,
         id,
@@ -120,7 +116,7 @@ export async function addMessage(message: Omit<ContactMessage, 'id' | 'createdAt
     const newMessageRef = push(ref(db, 'messages'));
     await set(newMessageRef, {
         ...message,
-        timestamp: serverTimestamp(),
+        createdAt: serverTimestamp(),
     });
 }
 
@@ -133,7 +129,7 @@ export async function getMessages(): Promise<ContactMessage[]> {
         name: msgData.name,
         phone: msgData.phone,
         message: msgData.message,
-        createdAt: new Date(msgData.timestamp),
+        createdAt: new Date(msgData.createdAt),
     }));
 }
 

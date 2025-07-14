@@ -7,32 +7,34 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ArrowLeft } from 'lucide-react';
-import { getProducts, getHomeImage, getFeaturedImages } from '@/lib/firebase/database';
+import { getProducts, getHomeImage } from '@/lib/firebase/database';
 import { useEffect, useState, useRef } from 'react';
 import Autoplay from 'embla-carousel-autoplay';
 import type { Product } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const [homeImage, setHomeImage] = useState("https://placehold.co/1920x1080/1d3557/ffffff?text=Hero");
-  const [featuredImages, setFeaturedImages] = useState<string[]>([]);
-  const [featuredImages2, setFeaturedImages2] = useState<string[]>([]);
+  const [featuredProducts1, setFeaturedProducts1] = useState<Product[]>([]);
+  const [featuredProducts2, setFeaturedProducts2] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   const autoplayPlugin = useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true })
+    Autoplay({ delay: 3000, stopOnInteraction: true })
   );
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [homeImg, featuredImg, featuredImg2] = await Promise.all([
+        const [homeImg, allProducts] = await Promise.all([
           getHomeImage(),
-          getFeaturedImages('featuredImages'),
-          getFeaturedImages('featuredImages2')
+          getProducts(),
         ]);
         if (homeImg) setHomeImage(homeImg);
-        if (featuredImg) setFeaturedImages(featuredImg);
-        if (featuredImg2) setFeaturedImages2(featuredImg2);
+        
+        setFeaturedProducts1(allProducts.filter(p => p.featured));
+        setFeaturedProducts2(allProducts.filter(p => p.featured2));
+
       } catch (error) {
         console.error("Failed to fetch homepage data:", error);
       } finally {
@@ -41,6 +43,18 @@ export default function Home() {
     }
     fetchData();
   }, []);
+
+  const renderCarouselSkeleton = (count: number, itemClass: string) => (
+    <CarouselContent>
+        {[...Array(count)].map((_, i) => (
+            <CarouselItem key={i} className={itemClass}>
+                 <div className="p-1">
+                    <Skeleton className="h-64 w-full rounded-lg" />
+                 </div>
+            </CarouselItem>
+        ))}
+    </CarouselContent>
+  )
 
   return (
     <div className="flex flex-col items-center">
@@ -88,28 +102,30 @@ export default function Home() {
             }}
             className="w-full"
           >
-            <CarouselContent>
-              {featuredImages.map((image: string, index: number) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card className="overflow-hidden">
-                      <CardContent className="p-0">
-                        <Link href={`/products`}>
-                          <Image
-                            src={image}
-                            alt={`Featured image ${index + 1}`}
-                            width={400}
-                            height={300}
-                            className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"
-                            data-ai-hint="product image"
-                          />
-                        </Link>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
+           {loading ? renderCarouselSkeleton(3, "md:basis-1/2 lg:basis-1/3") : (
+              <CarouselContent>
+                {featuredProducts1.map((product) => (
+                  <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-0">
+                          <Link href={`/products/${product.slug}`}>
+                            <Image
+                              src={product.image}
+                              alt={product.name}
+                              width={400}
+                              height={300}
+                              className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"
+                              data-ai-hint="product image"
+                            />
+                          </Link>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            )}
             <CarouselPrevious className="hidden sm:flex" />
             <CarouselNext className="hidden sm:flex" />
           </Carousel>
@@ -132,28 +148,30 @@ export default function Home() {
             onMouseLeave={autoplayPlugin.current.reset}
             className="w-full"
           >
-            <CarouselContent>
-              {featuredImages2.map((image: string, index: number) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/4 xl:basis-1/5">
-                  <div className="p-1">
-                    <Card className="overflow-hidden">
-                      <CardContent className="p-0">
-                         <Link href={`/products`}>
-                            <Image
-                              src={image}
-                              alt={`Featured image 2 ${index + 1}`}
-                              width={400}
-                              height={300}
-                              className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"
-                              data-ai-hint="product image"
-                            />
-                         </Link>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
+            {loading ? renderCarouselSkeleton(5, "md:basis-1/2 lg:basis-1/4 xl:basis-1/5") : (
+                <CarouselContent>
+                  {featuredProducts2.map((product) => (
+                    <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/4 xl:basis-1/5">
+                      <div className="p-1">
+                        <Card className="overflow-hidden">
+                          <CardContent className="p-0">
+                            <Link href={`/products/${product.slug}`}>
+                                <Image
+                                  src={product.image}
+                                  alt={product.name}
+                                  width={400}
+                                  height={300}
+                                  className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"
+                                  data-ai-hint="product image"
+                                />
+                            </Link>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+            )}
             <CarouselPrevious className="hidden sm:flex" />
             <CarouselNext className="hidden sm:flex" />
           </Carousel>
