@@ -64,7 +64,7 @@ import {
                               <p className="font-medium">{item.name}</p>
                               <p className="text-xs text-muted-foreground">الكمية: {item.quantity}</p>
                             </div>
-                            <Badge variant="secondary">{(item.price * item.quantity).toLocaleString()} د.ع</Badge>
+                            <Badge variant="secondary">{(item.price * item.quantity).toLocaleString()} د.أ</Badge>
                           </div>
                         ))}
                       </div>

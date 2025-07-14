@@ -52,7 +52,7 @@ export default async function AdminProductsPage() {
                   />
                 </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.price.toLocaleString()} د.ع</TableCell>
+                <TableCell>{product.price.toLocaleString()} د.أ</TableCell>
                 <TableCell>
                   {product.category === 'Laptops' ? 'لابتوب' : 'هاتف'}
                 </TableCell>

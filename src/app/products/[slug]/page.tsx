@@ -40,7 +40,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
             {product.condition === 'New' ? 'جديد' : 'مستعمل'}
           </Badge>
           <h1 className="font-headline mt-4 text-3xl font-bold lg:text-4xl">{product.name}</h1>
-          <p className="mt-4 text-3xl font-bold text-primary">{product.price.toLocaleString()} د.ع</p>
+          <p className="mt-4 text-3xl font-bold text-primary">{product.price.toLocaleString()} د.أ</p>
           <p className="mt-6 text-lg text-muted-foreground">{product.longDescription}</p>
           
           <div className="mt-8">

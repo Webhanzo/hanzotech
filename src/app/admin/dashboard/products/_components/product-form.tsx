@@ -125,7 +125,7 @@ export default function ProductForm({
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>السعر (د.ع)</FormLabel>
+              <FormLabel>السعر (د.أ)</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="4500" {...field} />
               </FormControl>

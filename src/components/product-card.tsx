@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <p className="text-sm text-muted-foreground">{product.description}</p>
       </CardContent>
       <CardFooter className="flex items-center justify-between p-4 pt-0">
-        <p className="text-xl font-bold text-primary">{product.price} د.ع</p>
+        <p className="text-xl font-bold text-primary">{product.price} د.أ</p>
         <Button onClick={handleAddToCart} size="icon" aria-label="أضف إلى السلة">
           <ShoppingCart className="h-5 w-5" />
         </Button>

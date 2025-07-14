@@ -95,8 +95,8 @@ export default function CartPage() {
                     <Image src={item.image} alt={item.name} width={100} height={100} className="rounded-md object-cover" data-ai-hint="product image" />
                     <div className="me-4 flex-1">
                         <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground">{item.price.toLocaleString()} د.ع x {item.quantity}</p>
-                        <p className="text-lg font-bold text-primary">{(item.price * item.quantity).toLocaleString()} د.ع</p>
+                        <p className="text-sm text-muted-foreground">{item.price.toLocaleString()} د.أ x {item.quantity}</p>
+                        <p className="text-lg font-bold text-primary">{(item.price * item.quantity).toLocaleString()} د.أ</p>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)}>
                         <Trash2 className="h-5 w-5 text-destructive" />
@@ -112,11 +112,11 @@ export default function CartPage() {
                 <CardContent className="space-y-4">
                     <div className="flex justify-between">
                         <span>المجموع الفرعي</span>
-                        <span>{totalPrice.toLocaleString()} د.ع</span>
+                        <span>{totalPrice.toLocaleString()} د.أ</span>
                     </div>
                     <div className="flex justify-between text-lg font-bold">
                         <span>الإجمالي</span>
-                        <span>{totalPrice.toLocaleString()} د.ع</span>
+                        <span>{totalPrice.toLocaleString()} د.أ</span>
                     </div>
                      <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 border-t pt-4">
