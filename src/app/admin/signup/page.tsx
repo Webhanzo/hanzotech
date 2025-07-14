@@ -8,21 +8,20 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn, UserPlus } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'الرجاء إدخال بريد إلكتروني صالح.' }),
   password: z.string().min(6, { message: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.' }),
 });
 
-export default function AdminLoginPage() {
+export default function AdminSignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
@@ -40,16 +39,16 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError(null);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
-        title: "تم تسجيل الدخول بنجاح!",
-        description: "مرحباً بك في لوحة التحكم.",
+        title: "تم إنشاء الحساب بنجاح!",
+        description: "سيتم توجيهك إلى لوحة التحكم.",
         className: 'bg-accent text-accent-foreground border-0',
       });
       router.push('/admin/dashboard');
     } catch (err: any) {
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
-        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+      if (err.code === 'auth/email-already-in-use') {
+        setError('هذا البريد الإلكتروني مستخدم بالفعل.');
       } else {
         setError('حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى.');
         console.error(err);
@@ -63,16 +62,16 @@ export default function AdminLoginPage() {
     <div className="container mx-auto flex min-h-[calc(100vh-200px)] max-w-7xl items-center justify-center px-4 py-16 md:px-6 lg:py-24">
       <Card className="mx-auto w-full max-w-md">
         <CardHeader>
-          <CardTitle className="font-headline text-center text-3xl font-bold">لوحة تحكم المشرف</CardTitle>
+          <CardTitle className="font-headline text-center text-3xl font-bold">إنشاء حساب مشرف</CardTitle>
           <CardDescription className="text-center">
-            الرجاء تسجيل الدخول للمتابعة
+             هذه الصفحة لإنشاء حساب المشرف الأول فقط.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
             <Alert variant="destructive" className="mb-4">
                  <Terminal className="h-4 w-4" />
-                <AlertTitle>خطأ في تسجيل الدخول</AlertTitle>
+                <AlertTitle>خطأ في إنشاء الحساب</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -105,23 +104,12 @@ export default function AdminLoginPage() {
                 )}
               />
               <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                {loading ? 'جارٍ تسجيل الدخول...' : 'تسجيل الدخول'}
-                <LogIn className="ms-2 h-5 w-5" />
+                 {loading ? 'جارٍ الإنشاء...' : 'إنشاء حساب'}
+                <UserPlus className="ms-2 h-5 w-5" />
               </Button>
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <p className="text-xs text-muted-foreground">
-            لا تملك حساب؟
-          </p>
-          <Button variant="outline" className="w-full" asChild>
-            <Link href="/admin/signup">
-                إنشاء حساب مشرف جديد
-                <UserPlus className="ms-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
