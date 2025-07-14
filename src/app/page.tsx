@@ -5,16 +5,34 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import type { Product } from '@/lib/types';
 import { ArrowLeft } from 'lucide-react';
-import { getProducts } from '@/lib/firebase/firestore';
+import { getProducts, getSiteData } from '@/lib/firebase/firestore';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const products = await getProducts();
+  const siteData = await getSiteData('home');
+
   const featuredProducts = products.filter((p) => p.featured);
   const featuredProducts2 = products.filter((p) => p.featured2);
 
+  const homeImage = siteData?.homeImage || "https://placehold.co/1920x1080/1d3557/ffffff?text=Hero";
+  const featuredImages = siteData?.featuredImages || [];
+  const featuredImages2 = siteData?.featuredImages2 || [];
+
+
   return (
     <div className="flex flex-col items-center">
-      <section className="w-full py-20 md:py-32 lg:py-40 bg-cover bg-center bg-[url('https://placehold.co/1920x600/1d3557/e63946.png?text=HANZO')]">
+      <section className="relative w-full py-20 md:py-32 lg:py-40">
+        <Image
+          src={homeImage}
+          alt="Hero background"
+          layout="fill"
+          objectFit="cover"
+          className="z-[-1]"
+          data-ai-hint="background technology"
+        />
+        <div className="absolute inset-0 bg-black/50 z-[-1]"></div>
         <div className="container mx-auto px-4 md:px-6">
           <div className="mx-auto max-w-3xl text-center text-white">
             <h1 className="font-headline text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
@@ -49,15 +67,15 @@ export default async function Home() {
             className="w-full"
           >
             <CarouselContent>
-              {featuredProducts.map((product: Product) => (
-                <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+              {featuredImages.map((image: string, index: number) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-1">
                     <Card className="overflow-hidden">
                       <CardContent className="p-0">
-                        <Link href={`/products/${product.slug}`}>
+                        <Link href={`/products`}>
                           <Image
-                            src={product.image}
-                            alt={product.name}
+                            src={image}
+                            alt={`Featured image ${index + 1}`}
                             width={400}
                             height={300}
                             className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"
@@ -90,15 +108,15 @@ export default async function Home() {
             className="w-full"
           >
             <CarouselContent>
-              {featuredProducts2.map((product: Product) => (
-                <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/4 xl:basis-1/5">
+              {featuredImages2.map((image: string, index: number) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/4 xl:basis-1/5">
                   <div className="p-1">
                     <Card className="overflow-hidden">
                       <CardContent className="p-0">
-                         <Link href={`/products/${product.slug}`}>
+                         <Link href={`/products`}>
                             <Image
-                              src={product.image}
-                              alt={product.name}
+                              src={image}
+                              alt={`Featured image 2 ${index + 1}`}
                               width={400}
                               height={300}
                               className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"

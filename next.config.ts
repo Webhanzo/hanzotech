@@ -13,8 +13,34 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scontent.famm2-3.fna.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.webmotors.com.br',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pisces.bbystatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'th.bing.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.pixabay.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com',
       },
     ],
   },

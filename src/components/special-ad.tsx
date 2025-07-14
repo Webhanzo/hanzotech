@@ -7,18 +7,36 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
+type SpecialAdData = {
+    image: string;
+    link: string;
+    text: string;
+    visible: boolean;
+}
+
 export default function SpecialAd() {
   const [isVisible, setIsVisible] = useState(false);
+  const [adData, setAdData] = useState<SpecialAdData | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 2000); 
+    // In a real app, you would fetch this from your database
+    const fetchedAdData: SpecialAdData = {
+        image: "https://scontent.famm2-3.fna.fbcdn.net/v/t39.30808-6/483983657_655510334001880_118447396326113016_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=833d8c&_nc_ohc=OgMY2DDRr2cQ7kNvgF_TnO5&_nc_oc=AdnCPanLd5sl0bG3wPQ_wQlt0GXZ025B7g-B1d5u_ukAXcGINwHBVYy9FDMimcgUl9k&_nc_zt=23&_nc_ht=scontent.famm2-3.fna&_nc_gid=KJrkanJvNeeeW-NzdVuWug&oh=00_AYGK1VFdtploQNV7G6QZXTKh5Ttc3FhoNqzyUGvEc0CZxA&oe=67E671E1",
+        link: "#",
+        text: "عروض خاصة!",
+        visible: true // Control visibility from DB
+    };
+    setAdData(fetchedAdData);
 
-    return () => clearTimeout(timer);
+    if (fetchedAdData.visible) {
+        const timer = setTimeout(() => {
+            setIsVisible(true);
+        }, 2000); 
+        return () => clearTimeout(timer);
+    }
   }, []);
 
-  if (!isVisible) {
+  if (!isVisible || !adData) {
     return null;
   }
 
@@ -37,17 +55,17 @@ export default function SpecialAd() {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <Link href="#" className="block">
+          <Link href={adData.link} className="block">
             <Image
-              src="https://placehold.co/256x150/2a9d8f/ffffff?text=عرض+خاص"
-              alt="إعلان خاص"
+              src={adData.image}
+              alt={adData.text}
               width={256}
               height={150}
               className="w-full object-cover"
               data-ai-hint="special offer"
             />
             <div className="p-4">
-              <p className="text-center font-semibold text-foreground">عرض خاص بمناسبة العيد!</p>
+              <p className="text-center font-semibold text-foreground">{adData.text}</p>
             </div>
           </Link>
         </CardContent>

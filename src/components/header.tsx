@@ -17,6 +17,10 @@ const navLinks = [
   { href: '/contact', label: 'اتصل بنا' },
 ];
 
+const headerData = {
+    logo: "https://res.cloudinary.com/dgx08zujs/image/upload/v1742782985/476020761_630805223139058_9077737273465101288_n-removebg-preview_woaols.png"
+}
+
 export default function Header() {
   const pathname = usePathname();
   const { itemCount } = useCart();
@@ -27,7 +31,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="https://placehold.co/40x40/e63946/ffffff?text=H"
+              src={headerData.logo}
               alt="HANZO Logo"
               width={40}
               height={40}
@@ -90,7 +94,7 @@ export default function Header() {
               <div className="flex flex-col gap-6 p-6">
                 <Link href="/" className="flex items-center gap-2">
                   <Image
-                    src="https://placehold.co/40x40/e63946/ffffff?text=H"
+                    src={headerData.logo}
                     alt="HANZO Logo"
                     width={40}
                     height={40}

@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, ShoppingBag } from 'lucide-react';
+import { addOrder } from '@/lib/firebase/firestore';
+import { useState } from 'react';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, { message: 'الاسم مطلوب' }),
@@ -19,10 +21,10 @@ const checkoutSchema = z.object({
   deliveryMethod: z.enum(['pickup', 'delivery']),
   city: z.string().optional(),
   landmark: z.string().optional(),
-}).refine(data => data.deliveryMethod !== 'delivery' || !!data.city, {
+}).refine(data => data.deliveryMethod !== 'delivery' || (!!data.city && data.city.length > 0), {
     message: 'المدينة مطلوبة للتوصيل',
     path: ['city'],
-}).refine(data => data.deliveryMethod !== 'delivery' || !!data.landmark, {
+}).refine(data => data.deliveryMethod !== 'delivery' || (!!data.landmark && data.landmark.length > 0), {
     message: 'أقرب معلم بارز مطلوب للتوصيل',
     path: ['landmark'],
 });
@@ -31,6 +33,7 @@ const checkoutSchema = z.object({
 export default function CartPage() {
   const { state, removeItem, clearCart, totalPrice, itemCount } = useCart();
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
@@ -45,15 +48,27 @@ export default function CartPage() {
 
   const deliveryMethod = form.watch('deliveryMethod');
 
-  function onSubmit(values: z.infer<typeof checkoutSchema>) {
-    console.log({ ...values, items: state.items });
-    toast({
-        title: "تم إرسال الطلب بنجاح!",
-        description: "شكراً لطلبك. سنتواصل معك قريباً لتأكيد التفاصيل.",
-        className: 'bg-accent text-accent-foreground border-0',
-      });
-    form.reset();
-    clearCart();
+  async function onSubmit(values: z.infer<typeof checkoutSchema>) {
+    setIsSubmitting(true);
+    try {
+        await addOrder({ ...values, items: state.items });
+        toast({
+            title: "تم إرسال الطلب بنجاح!",
+            description: "شكراً لطلبك. سنتواصل معك قريباً لتأكيد التفاصيل.",
+            className: 'bg-accent text-accent-foreground border-0',
+          });
+        form.reset();
+        clearCart();
+    } catch(error) {
+        console.error("Failed to submit order: ", error);
+        toast({
+            title: "حدث خطأ",
+            description: "لم نتمكن من إرسال طلبك. الرجاء المحاولة مرة أخرى.",
+            variant: "destructive",
+        })
+    } finally {
+        setIsSubmitting(false);
+    }
   }
 
   if (itemCount === 0) {
@@ -79,7 +94,7 @@ export default function CartPage() {
                     <Image src={item.image} alt={item.name} width={100} height={100} className="rounded-md object-cover" data-ai-hint="product image" />
                     <div className="flex-1 me-4">
                         <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground">{item.price} د.ع x {item.quantity}</p>
+                        <p className="text-sm text-muted-foreground">{item.price.toLocaleString()} د.ع x {item.quantity}</p>
                         <p className="text-lg font-bold text-primary">{(item.price * item.quantity).toLocaleString()} د.ع</p>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)}>
@@ -136,7 +151,7 @@ export default function CartPage() {
                                 )}/>
                                 </>
                             )}
-                            <Button type="submit" className="w-full" size="lg">إتمام الطلب</Button>
+                            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>{isSubmitting ? "جارٍ الإرسال..." : "إتمام الطلب"}</Button>
                         </form>
                     </Form>
                 </CardContent>

@@ -10,6 +10,7 @@ export type Product = {
   condition: 'New' | 'Used';
   featured: boolean;
   featured2: boolean;
+  timestamp?: number;
 };
 
 export type CartItem = Product & {
@@ -17,9 +18,20 @@ export type CartItem = Product & {
 };
 
 export type ContactMessage = {
-    id: string;
-    name: string;
-    phone: string;
-    message: string;
-    createdAt: Date;
+  id: string;
+  name: string;
+  phone: string;
+  message: string;
+  createdAt: Date;
+};
+
+export type Order = {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  deliveryMethod: 'pickup' | 'delivery';
+  city?: string;
+  landmark?: string;
+  products: CartItem[];
+  timestamp: Date;
 }

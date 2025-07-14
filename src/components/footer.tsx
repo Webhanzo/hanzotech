@@ -3,6 +3,16 @@ import Image from 'next/image';
 import { Facebook, Instagram, Phone } from 'lucide-react';
 
 export default function Footer() {
+  const footerData = {
+    about: "HANZO - تقنية متميزة لأسلوب حياتك",
+    facebook: "https://www.facebook.com/HanzoLaptops",
+    instagram: "https://www.instagram.com/hanzo_laptop/",
+    logo: "https://res.cloudinary.com/dgx08zujs/image/upload/v1742782985/476020761_630805223139058_9077737273465101288_n-removebg-preview_woaols.png",
+    phone1: "0776342240",
+    phone2: "0776153357",
+    whatsapp: "https://wa.link/wxmlue"
+  }
+
   return (
     <footer className="bg-secondary text-secondary-foreground">
       <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6">
@@ -10,7 +20,7 @@ export default function Footer() {
           <div className="flex flex-col items-center md:items-start">
              <Link href="/" className="flex items-center gap-2 mb-4">
               <Image
-                src="https://placehold.co/50x50/e63946/ffffff?text=H"
+                src={footerData.logo}
                 alt="HANZO Logo"
                 width={50}
                 height={50}
@@ -20,24 +30,24 @@ export default function Footer() {
               <span className="font-headline text-2xl font-bold">HANZO</span>
             </Link>
             <p className="text-center text-muted-foreground md:text-right">
-              HANZO - تقنية متميزة لأسلوب حياتك
+              {footerData.about}
             </p>
           </div>
           <div className="flex flex-col items-center text-center md:items-start md:text-right">
             <h3 className="font-headline mb-4 text-lg font-semibold">تواصل معنا</h3>
-            <p className="text-muted-foreground">رقم الهاتف 1: 123-456-789</p>
-            <p className="text-muted-foreground">رقم الهاتف 2: 987-654-321</p>
+            <p className="text-muted-foreground">رقم الهاتف 1: {footerData.phone1}</p>
+            <p className="text-muted-foreground">رقم الهاتف 2: {footerData.phone2}</p>
           </div>
           <div className="flex flex-col items-center md:items-start">
             <h3 className="font-headline mb-4 text-lg font-semibold">تابعنا</h3>
             <div className="flex gap-4">
-              <Link href="#" aria-label="Facebook">
+              <Link href={footerData.facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                 <Facebook className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
-              <Link href="#" aria-label="Instagram">
+              <Link href={footerData.instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                 <Instagram className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
-              <Link href="#" aria-label="WhatsApp">
+              <Link href={footerData.whatsapp} aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
                 <Phone className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
             </div>
