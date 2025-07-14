@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { Menu, Search, ShoppingCart } from 'lucide-react';
+import { Menu, Search, ShoppingCart, UserCog } from 'lucide-react';
 import { useCart } from '@/context/cart-provider';
 
 const navLinks = [
@@ -51,6 +51,15 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <Link
+              href="/admin/login"
+              className={cn(
+                'text-lg font-medium transition-colors hover:text-primary',
+                pathname.startsWith('/admin') ? 'text-primary' : 'text-foreground/60'
+              )}
+            >
+             دخول المشرف
+            </Link>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -103,6 +112,16 @@ export default function Header() {
                       {link.label}
                     </Link>
                   ))}
+                   <Link
+                    href="/admin/login"
+                    className={cn(
+                      'flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary',
+                      pathname.startsWith('/admin') ? 'text-primary' : 'text-foreground/80'
+                    )}
+                  >
+                    <UserCog className="h-5 w-5" />
+                    دخول المشرف
+                  </Link>
                 </nav>
               </div>
             </SheetContent>
