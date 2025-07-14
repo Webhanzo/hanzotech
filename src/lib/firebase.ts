@@ -17,7 +17,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+let app;
+if (typeof window !== 'undefined') {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+} else {
+  // Avoid server-side initialization if not needed or configured
+  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+}
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
