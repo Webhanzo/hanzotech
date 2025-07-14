@@ -58,7 +58,7 @@ import {
                     <div className="border-t pt-4">
                       <h4 className="mb-2 font-semibold">المنتجات المطلوبة:</h4>
                       <div className="space-y-2">
-                        {order.items.map(item => (
+                        {order.items && order.items.map(item => (
                           <div key={item.id} className="flex items-center justify-between rounded-md bg-muted/50 p-2">
                             <div>
                               <p className="font-medium">{item.name}</p>
