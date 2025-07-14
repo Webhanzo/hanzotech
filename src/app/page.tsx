@@ -3,11 +3,12 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { products } from '@/lib/products';
 import type { Product } from '@/lib/types';
 import { ArrowLeft } from 'lucide-react';
+import { getProducts } from '@/lib/firebase/firestore';
 
-export default function Home() {
+export default async function Home() {
+  const products = await getProducts();
   const featuredProducts = products.filter((p) => p.featured);
   const featuredProducts2 = products.filter((p) => p.featured2);
 

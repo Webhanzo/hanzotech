@@ -10,6 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
+import { addMessage } from '@/lib/firebase/firestore';
+import { useState } from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'يجب أن يتكون الاسم من حرفين على الأقل.' }),
@@ -19,6 +21,7 @@ const formSchema = z.object({
 
 export default function ContactPage() {
     const { toast } = useToast();
+    const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -28,14 +31,26 @@ export default function ContactPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-        title: "تم إرسال الرسالة بنجاح!",
-        description: "شكراً لتواصلك معنا. سنقوم بالرد في أقرب وقت ممكن.",
-        className: 'bg-accent text-accent-foreground border-0',
-      });
-    form.reset();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+    try {
+        await addMessage(values);
+        toast({
+            title: "تم إرسال الرسالة بنجاح!",
+            description: "شكراً لتواصلك معنا. سنقوم بالرد في أقرب وقت ممكن.",
+            className: 'bg-accent text-accent-foreground border-0',
+          });
+        form.reset();
+    } catch (error) {
+        toast({
+            title: "حدث خطأ ما",
+            description: "لم نتمكن من إرسال رسالتك. الرجاء المحاولة مرة أخرى.",
+            variant: "destructive",
+        });
+        console.error(error);
+    } finally {
+        setLoading(false);
+    }
   }
 
   return (
@@ -54,7 +69,7 @@ export default function ContactPage() {
                   <FormItem>
                     <FormLabel>الاسم</FormLabel>
                     <FormControl>
-                      <Input placeholder="اسمك الكامل" {...field} />
+                      <Input placeholder="اسمك الكامل" {...field} disabled={loading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -67,7 +82,7 @@ export default function ContactPage() {
                   <FormItem>
                     <FormLabel>رقم الهاتف</FormLabel>
                     <FormControl>
-                      <Input placeholder="رقم هاتفك" {...field} />
+                      <Input placeholder="رقم هاتفك" {...field} disabled={loading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -80,14 +95,14 @@ export default function ContactPage() {
                   <FormItem>
                     <FormLabel>رسالتك</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="اكتب استفسارك هنا..." className="min-h-[150px]" {...field} />
+                      <Textarea placeholder="اكتب استفسارك هنا..." className="min-h-[150px]" {...field} disabled={loading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" size="lg">
-                إرسال
+              <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                {loading ? 'جارٍ الإرسال...' : 'إرسال'}
                 <Send className="ms-2 h-5 w-5" />
               </Button>
             </form>

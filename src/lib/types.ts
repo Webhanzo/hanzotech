@@ -15,3 +15,11 @@ export type Product = {
 export type CartItem = Product & {
   quantity: number;
 };
+
+export type ContactMessage = {
+    id: string;
+    name: string;
+    phone: string;
+    message: string;
+    createdAt: Date;
+}

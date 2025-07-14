@@ -2,22 +2,34 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import ProductCard from '@/components/product-card';
-import { products as allProducts } from '@/lib/products';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getProducts } from '@/lib/firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const categories = ['جميع المنتجات', 'Laptops', 'Phones'];
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>(allProducts);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('جميع المنتجات');
   const [sortOption, setSortOption] = useState('default');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const productsFromDb = await getProducts();
+      setAllProducts(productsFromDb);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = allProducts;
@@ -44,15 +56,7 @@ export default function ProductsPage() {
     }
     
     return sorted;
-  }, [activeCategory, sortOption, minPrice, maxPrice]);
-
-  useEffect(() => {
-    setProducts(filteredAndSortedProducts);
-  }, [filteredAndSortedProducts]);
-
-  const handleFilter = () => {
-    setProducts(filteredAndSortedProducts);
-  }
+  }, [allProducts, activeCategory, sortOption, minPrice, maxPrice]);
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6 lg:py-12">
@@ -101,7 +105,6 @@ export default function ProductsPage() {
                     <Input id="max-price" type="number" placeholder="الأعلى" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
                 </div>
               </div>
-               <Button onClick={handleFilter} className="w-full" variant="secondary">تطبيق التصفية</Button>
             </CardContent>
           </Card>
         </aside>
@@ -109,13 +112,27 @@ export default function ProductsPage() {
         <main className="lg:col-span-3">
             <h1 className="font-headline mb-6 text-3xl font-bold tracking-tight sm:text-4xl">
                 {activeCategory === 'Laptops' ? 'لابتوبات' : activeCategory === 'Phones' ? 'هواتف' : 'جميع المنتجات'}
-                <span className="text-lg font-normal text-muted-foreground"> ({products.length} منتجات)</span>
+                {!loading && <span className="text-lg font-normal text-muted-foreground"> ({filteredAndSortedProducts.length} منتجات)</span>}
             </h1>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="flex flex-col space-y-3">
+                       <Skeleton className="h-[225px] w-full rounded-xl" />
+                       <div className="space-y-2">
+                           <Skeleton className="h-4 w-3/4" />
+                           <Skeleton className="h-4 w-1/2" />
+                       </div>
+                   </div>
+                ))}
+             </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {filteredAndSortedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </div>

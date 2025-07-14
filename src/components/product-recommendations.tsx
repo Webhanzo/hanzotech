@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import type { Product, Product as ProductType } from '@/lib/types';
 import { getProductRecommendations } from '@/ai/flows/product-recommendations';
-import { products } from '@/lib/products';
 import ProductCard from './product-card';
 import { Skeleton } from './ui/skeleton';
+import { getProducts } from '@/lib/firebase/firestore';
 
 async function getRecommendationsAction(product: ProductType) {
   'use server';
@@ -25,17 +25,27 @@ async function getRecommendationsAction(product: ProductType) {
 export default function ProductRecommendations({ product }: { product: ProductType }) {
   const [recommendations, setRecommendations] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
+    const fetchProducts = async () => {
+        const productsFromDb = await getProducts();
+        setAllProducts(productsFromDb);
+    }
+    fetchProducts();
+  }, [])
+
+  useEffect(() => {
+    if (allProducts.length === 0) return;
+
     const fetchRecommendations = async () => {
       setLoading(true);
       const recommendedNames = await getRecommendationsAction(product);
       
-      const recommendedProducts = products.filter(p => recommendedNames.includes(p.name) && p.id !== product.id);
+      const recommendedProducts = allProducts.filter(p => recommendedNames.includes(p.name) && p.id !== product.id);
       
-      // If AI gives less than 3, fill with products from same category
       if (recommendedProducts.length < 3) {
-        const fallback = products.filter(p => p.category === product.category && p.id !== product.id && !recommendedNames.includes(p.name));
+        const fallback = allProducts.filter(p => p.category === product.category && p.id !== product.id && !recommendedNames.includes(p.name));
         const needed = 3 - recommendedProducts.length;
         recommendedProducts.push(...fallback.slice(0, needed));
       }
@@ -45,7 +55,7 @@ export default function ProductRecommendations({ product }: { product: ProductTy
     };
 
     fetchRecommendations();
-  }, [product]);
+  }, [product, allProducts]);
 
   if (loading) {
     return (
