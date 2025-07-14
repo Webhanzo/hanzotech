@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { getSpecialAd } from '@/lib/firebase/database';
 
 type SpecialAdData = {
     image: string;
@@ -14,23 +15,20 @@ type SpecialAdData = {
     visible: boolean;
 }
 
-const adData: SpecialAdData = {
-    image: "https://scontent.famm2-3.fna.fbcdn.net/v/t39.30808-6/483983657_655510334001880_118447396326113016_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=833d8c&_nc_ohc=OgMY2DDRr2cQ7kNvgF_TnO5&_nc_oc=AdnCPanLd5sl0bG3wPQ_wQlt0GXZ025B7g-B1d5u_ukAXcGINwHBVYy9FDMimcgUl9k&_nc_zt=23&_nc_ht=scontent.famm2-3.fna&_nc_gid=KJrkanJvNeeeW-NzdVuWug&oh=00_AYGK1VFdtploQNV7G6QZXTKh5Ttc3FhoNqzyUGvEc0CZxA&oe=67E671E1",
-    link: "#",
-    text: "عروض عروض",
-    visible: true, // set to true to show, false to hide
-}
-
 export default function SpecialAd() {
   const [isVisible, setIsVisible] = useState(false);
+  const [adData, setAdData] = useState<SpecialAdData | null>(null);
 
   useEffect(() => {
-    if (adData && adData.visible) {
-        const timer = setTimeout(() => {
-            setIsVisible(true);
-        }, 2000); 
-        return () => clearTimeout(timer);
-    }
+    getSpecialAd().then(data => {
+        if (data && data.visible) {
+            setAdData(data);
+            const timer = setTimeout(() => {
+                setIsVisible(true);
+            }, 2000); 
+            return () => clearTimeout(timer);
+        }
+    });
   }, []);
 
   if (!isVisible || !adData) {
@@ -41,7 +39,7 @@ export default function SpecialAd() {
     <div className="fixed bottom-5 start-5 z-50 animate-in fade-in slide-in-from-bottom-5">
       <Card className="w-64 overflow-hidden shadow-2xl">
         <CardContent className="p-0">
-          <div className="absolute top-1 right-1 z-10">
+          <div className="absolute right-1 top-1 z-10">
             <Button
               variant="ghost"
               size="icon"

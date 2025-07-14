@@ -10,7 +10,7 @@ export type Product = {
   condition: 'New' | 'Used';
   featured: boolean;
   featured2: boolean;
-  timestamp: any; // Firestore serverTimestamp is an object
+  timestamp: any;
 };
 
 export type CartItem = Product & {

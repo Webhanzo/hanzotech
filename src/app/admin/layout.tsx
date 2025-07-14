@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LayoutDashboard, LogOut, MessageSquare, Package, FileImage, Settings, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
-
-// Mock User type and auth functions since Firebase is removed
-type User = { email: string };
+import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
+import { auth } from '@/lib/firebase/init';
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -17,22 +16,25 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Mock authentication check
-    const loggedInUser = localStorage.getItem('adminUser');
-    if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser));
-    } else {
-      if (pathname !== '/admin/login') {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (!currentUser && pathname !== '/admin/login') {
         router.push('/admin/login');
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, [router, pathname]);
 
+
   const handleLogout = async () => {
-    localStorage.removeItem('adminUser');
-    setUser(null);
-    router.push('/admin/login');
+    try {
+      await signOut(auth);
+      router.push('/admin/login');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
   if (loading) {

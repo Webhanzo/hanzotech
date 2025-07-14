@@ -10,18 +10,15 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn } from 'lucide-react';
+import { LogIn, Terminal } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase/init';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'الرجاء إدخال بريد إلكتروني صالح.' }),
   password: z.string().min(6, { message: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.' }),
 });
-
-// Hardcoded credentials as requested
-const ADMIN_EMAIL = 'Yazan.Admin@Hanzo.com';
-const ADMIN_PASSWORD = 'Xoo0#benn@xsok.2025';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -32,7 +29,7 @@ export default function AdminLoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: ADMIN_EMAIL,
+      email: 'Yazan.Admin@Hanzo.com',
       password: '',
     },
   });
@@ -41,23 +38,24 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError(null);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    if (values.email === ADMIN_EMAIL && values.password === ADMIN_PASSWORD) {
-      // Mock successful login by storing a value in localStorage
-      localStorage.setItem('adminUser', JSON.stringify({ email: values.email }));
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
         title: "تم تسجيل الدخول بنجاح!",
         description: "مرحباً بك في لوحة التحكم.",
         className: 'bg-accent text-accent-foreground border-0',
       });
       router.push('/admin/dashboard');
-    } else {
-      setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+    } catch (authError: any) {
+        if (authError.code === 'auth/invalid-credential' || authError.code === 'auth/wrong-password' || authError.code === 'auth/user-not-found') {
+            setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+        } else {
+            setError('حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.');
+            console.error(authError);
+        }
+    } finally {
+        setLoading(false);
     }
-    
-    setLoading(false);
   }
 
   return (

@@ -2,7 +2,7 @@
 
 import { useCart } from '@/context/cart-provider';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
+import { addOrder } from '@/lib/firebase/database';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, { message: 'الاسم مطلوب' }),
@@ -50,11 +51,8 @@ export default function CartPage() {
   async function onSubmit(values: z.infer<typeof checkoutSchema>) {
     setIsSubmitting(true);
     
-    // Simulate API call since Firebase is removed
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-        console.log("Order submitted (no DB connection):", { ...values, items: state.items });
+        await addOrder({ ...values, items: state.items });
         toast({
             title: "تم إرسال الطلب بنجاح!",
             description: "شكراً لطلبك. سنتواصل معك قريباً لتأكيد التفاصيل.",
@@ -95,7 +93,7 @@ export default function CartPage() {
             {state.items.map(item => (
                 <Card key={item.id} className="flex items-center p-4">
                     <Image src={item.image} alt={item.name} width={100} height={100} className="rounded-md object-cover" data-ai-hint="product image" />
-                    <div className="flex-1 me-4">
+                    <div className="me-4 flex-1">
                         <h3 className="font-semibold">{item.name}</h3>
                         <p className="text-sm text-muted-foreground">{item.price.toLocaleString()} د.ع x {item.quantity}</p>
                         <p className="text-lg font-bold text-primary">{(item.price * item.quantity).toLocaleString()} د.ع</p>
@@ -116,12 +114,12 @@ export default function CartPage() {
                         <span>المجموع الفرعي</span>
                         <span>{totalPrice.toLocaleString()} د.ع</span>
                     </div>
-                    <div className="flex justify-between font-bold text-lg">
+                    <div className="flex justify-between text-lg font-bold">
                         <span>الإجمالي</span>
                         <span>{totalPrice.toLocaleString()} د.ع</span>
                     </div>
                      <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4 border-t">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 border-t pt-4">
                             <FormField control={form.control} name="fullName" render={({ field }) => (
                                 <FormItem><FormLabel>الاسم الكامل</FormLabel><FormControl><Input placeholder="اسمك الكامل" {...field} /></FormControl><FormMessage /></FormItem>
                             )}/>

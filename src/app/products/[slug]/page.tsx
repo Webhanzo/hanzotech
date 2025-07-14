@@ -3,16 +3,17 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import ProductRecommendations from '@/components/product-recommendations';
 import AddToCartButton from './add-to-cart-button';
-import { products } from '@/lib/products'; // Use local products
+import { getProductBySlug, getProducts } from '@/lib/firebase/database'; // Use local products
 
 export async function generateStaticParams() {
+  const products = await getProducts();
   return products.map((product) => ({
     slug: product.slug,
   }));
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const product = products.find((p) => p.slug === params.slug);
+  const product = await getProductBySlug(params.slug);
 
   if (!product) {
     notFound();
@@ -27,7 +28,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
             alt={product.name}
             width={600}
             height={600}
-            className="h-full w-full object-cover rounded-lg"
+            className="h-full w-full rounded-lg object-cover"
             data-ai-hint="product image"
           />
         </div>

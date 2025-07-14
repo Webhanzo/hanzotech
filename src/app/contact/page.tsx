@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
 import { useState } from 'react';
+import { addMessage } from '@/lib/firebase/database';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'يجب أن يتكون الاسم من حرفين على الأقل.' }),
@@ -33,11 +34,8 @@ export default function ContactPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-        console.log("Form submitted (no DB connection):", values);
+        await addMessage(values);
         toast({
             title: "تم إرسال الرسالة بنجاح!",
             description: "شكراً لتواصلك معنا. سنقوم بالرد في أقرب وقت ممكن.",

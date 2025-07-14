@@ -1,6 +1,4 @@
-// This page is now disabled as it depends on Firestore which has been removed.
-// You can re-enable it if you connect it to a different data source.
-
+// src/app/admin/dashboard/products/page.tsx
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import {
@@ -11,36 +9,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
-// import { products } from '@/lib/products'; // Example for local data
+import ProductActions from './_components/product-actions';
+import { getProducts } from '@/lib/firebase/database';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminProductsPage() {
-  const products: any[] = []; // Disabled
+  const products = await getProducts();
 
   return (
     <div className="p-4 md:p-6">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">إدارة المنتجات</h1>
-        <Button asChild disabled>
+        <Button asChild>
           <Link href="/admin/dashboard/products/add">إضافة منتج جديد</Link>
         </Button>
       </div>
 
-       <Card>
-        <CardHeader>
-          <CardTitle>الوظيفة معطلة</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            تم تعطيل إدارة المنتجات لأنه تم إزالة الاتصال بقاعدة البيانات.
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* 
       <div className="overflow-hidden rounded-lg border">
         <Table>
           <TableHeader>
@@ -74,14 +60,13 @@ export default async function AdminProductsPage() {
                   {product.condition === 'New' ? 'جديد' : 'مستعمل'}
                 </TableCell>
                 <TableCell className="text-left">
-                    <p>معطل</p>
+                  <ProductActions productId={product.id} />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </div> 
-      */}
+      </div>
     </div>
   );
 }

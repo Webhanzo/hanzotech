@@ -1,27 +1,32 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, Phone } from 'lucide-react';
+import { getFooterData } from '@/lib/firebase/database';
 
-// Static data since Firebase is removed
-const footerData = {
-  about: "HANZO - تقنية متميزة لأسلوب حياتك",
-  facebook: "https://www.facebook.com/HanzoLaptops",
-  instagram: "https://www.instagram.com/hanzo_laptop/",
-  logo: "https://res.cloudinary.com/dgx08zujs/image/upload/v1742782985/476020761_630805223139058_9077737273465101288_n-removebg-preview_woaols.png",
-  phone1: "0776342240",
-  phone2: "0776153357",
-  whatsapp: "https://wa.link/wxmlue"
-};
 
 export default async function Footer() {
+  const footerData = await getFooterData();
+
+  const defaultData = {
+    about: "HANZO - تقنية متميزة لأسلوب حياتك",
+    facebook: "#",
+    instagram: "#",
+    logo: "https://placehold.co/50x50",
+    phone1: "N/A",
+    phone2: "N/A",
+    whatsapp: "#"
+  };
+
+  const data = footerData || defaultData;
+
   return (
     <footer className="bg-secondary text-secondary-foreground">
       <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="flex flex-col items-center md:items-start">
-             <Link href="/" className="flex items-center gap-2 mb-4">
+             <Link href="/" className="mb-4 flex items-center gap-2">
               <Image
-                src={footerData.logo}
+                src={data.logo}
                 alt="HANZO Logo"
                 width={50}
                 height={50}
@@ -31,24 +36,24 @@ export default async function Footer() {
               <span className="font-headline text-2xl font-bold">HANZO</span>
             </Link>
             <p className="text-center text-muted-foreground md:text-right">
-              {footerData.about}
+              {data.about}
             </p>
           </div>
           <div className="flex flex-col items-center text-center md:items-start md:text-right">
             <h3 className="font-headline mb-4 text-lg font-semibold">تواصل معنا</h3>
-            <p className="text-muted-foreground">رقم الهاتف 1: {footerData.phone1}</p>
-            <p className="text-muted-foreground">رقم الهاتف 2: {footerData.phone2}</p>
+            <p className="text-muted-foreground">رقم الهاتف 1: {data.phone1}</p>
+            <p className="text-muted-foreground">رقم الهاتف 2: {data.phone2}</p>
           </div>
           <div className="flex flex-col items-center md:items-start">
             <h3 className="font-headline mb-4 text-lg font-semibold">تابعنا</h3>
             <div className="flex gap-4">
-              <Link href={footerData.facebook || '#'} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+              <Link href={data.facebook || '#'} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                 <Facebook className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
-              <Link href={footerData.instagram || '#'} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              <Link href={data.instagram || '#'} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                 <Instagram className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
-              <Link href={footerData.whatsapp || '#'} aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+              <Link href={data.whatsapp || '#'} aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
                 <Phone className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
             </div>

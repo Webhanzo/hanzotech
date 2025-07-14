@@ -1,7 +1,7 @@
 // src/app/admin/dashboard/products/_components/product-actions.tsx
 'use client';
 import { Button } from '@/components/ui/button';
-import { deleteProduct } from '@/lib/firebase/firestore';
+import { deleteProduct } from '@/lib/firebase/database';
 import { Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useTransition } from 'react';
@@ -17,10 +17,12 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
+import { useRouter } from 'next/navigation';
 
 export default function ProductActions({ productId }: { productId: string }) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -31,6 +33,7 @@ export default function ProductActions({ productId }: { productId: string }) {
           description: 'تم حذف المنتج من قاعدة البيانات.',
           className: 'bg-accent text-accent-foreground border-0',
         });
+        router.refresh();
       } catch (error) {
         toast({
           title: 'حدث خطأ',
