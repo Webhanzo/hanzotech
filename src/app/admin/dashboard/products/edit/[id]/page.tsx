@@ -9,7 +9,8 @@ import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
-function EditProductForm({ productId }: { productId: string }) {
+export default function EditProductPage({ params }: { params: { id: string } }) {
+  const { id: productId } = params;
   const router = useRouter();
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
@@ -70,7 +71,12 @@ function EditProductForm({ productId }: { productId: string }) {
   }
 
   if (!product) {
-    return <p>المنتج غير موجود.</p>;
+    return (
+        <div className="p-4 md:p-6">
+            <h1 className="mb-6 text-2xl font-bold">تعديل المنتج</h1>
+            <p>المنتج غير موجود.</p>
+        </div>
+    );
   }
 
   return (
@@ -79,9 +85,4 @@ function EditProductForm({ productId }: { productId: string }) {
       <ProductForm product={product} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
     </div>
   );
-}
-
-
-export default function EditProductPage({ params }: { params: { id: string } }) {
-  return <EditProductForm productId={params.id} />;
 }
