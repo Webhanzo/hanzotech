@@ -10,7 +10,7 @@ export type Product = {
   condition: 'New' | 'Used';
   featured: boolean;
   featured2: boolean;
-  timestamp?: number;
+  timestamp: any; // Firestore serverTimestamp is an object
 };
 
 export type CartItem = Product & {
@@ -32,6 +32,6 @@ export type Order = {
   deliveryMethod: 'pickup' | 'delivery';
   city?: string;
   landmark?: string;
-  products: CartItem[];
+  items: CartItem[];
   timestamp: Date;
 }

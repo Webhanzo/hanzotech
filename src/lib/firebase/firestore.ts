@@ -9,7 +9,10 @@ import {
   getDocs,
   setDoc,
   serverTimestamp,
-  getDoc
+  getDoc,
+  query,
+  orderBy,
+  Timestamp,
 } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
 
@@ -22,7 +25,7 @@ export async function getDocument(collectionName: string, docId: string): Promis
         const docRef = doc(db, collectionName, docId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-            return docSnap.data();
+            return { id: docSnap.id, ...docSnap.data() };
         }
     } catch (e) {
         console.error(`Error fetching document ${collectionName}/${docId}:`, e);
@@ -30,10 +33,16 @@ export async function getDocument(collectionName: string, docId: string): Promis
     return null;
 }
 
+// Generic data writer for single document
+export async function updateDocument(collectionName: string, docId: string, data: any) {
+  const docRef = doc(db, collectionName, docId);
+  await setDoc(docRef, data, { merge: true });
+  revalidatePath('/', 'layout'); // Revalidate all paths
+}
+
 // Fetch all site data from the 'site' collection
 export async function getSiteData(): Promise<any> {
     const homeData = await getDocument('site', 'home');
-    // Ensure we have default values to prevent crashes if data is missing
     return {
         homeImage: homeData?.homeImage || "https://placehold.co/1920x1080/1d3557/ffffff?text=Hero",
         featuredImages: homeData?.featuredImages || [],
@@ -41,10 +50,11 @@ export async function getSiteData(): Promise<any> {
     };
 }
 
-
 // Products
 export async function getProducts(): Promise<Product[]> {
-  const snapshot = await getDocs(collection(db, 'products'));
+  const productsCollection = collection(db, 'products');
+  const q = query(productsCollection, orderBy('timestamp', 'desc'));
+  const snapshot = await getDocs(q);
   const products = snapshot.docs.map(
     (doc) =>
       ({
@@ -54,14 +64,13 @@ export async function getProducts(): Promise<Product[]> {
         price: Number(doc.data().price) || 0,
       } as Product)
   );
-  // Sort by timestamp if it exists, otherwise no specific order
-  return products.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  return products;
 }
 
 export async function addProduct(
-  product: Omit<Product, 'id' | 'slug'>
+  product: Omit<Product, 'id' | 'slug' | 'timestamp'>
 ): Promise<void> {
-  const slug = product.name.toLowerCase().replace(/\s+/g, '-');
+  const slug = product.name.toLowerCase().replace(/\s+/g, '-').slice(0, 50);
   await addDoc(collection(db, 'products'), { ...product, slug, timestamp: serverTimestamp() });
   revalidatePath('/admin/dashboard/products');
   revalidatePath('/products');
@@ -70,9 +79,9 @@ export async function addProduct(
 
 export async function updateProduct(
   id: string,
-  product: Omit<Product, 'id' | 'slug'>
+  product: Omit<Product, 'id' | 'slug' | 'timestamp'>
 ): Promise<void> {
-  const slug = product.name.toLowerCase().replace(/\s+/g, '-');
+  const slug = product.name.toLowerCase().replace(/\s+/g, '-').slice(0, 50);
   await setDoc(doc(db, 'products', id), { ...product, slug }, { merge: true });
   revalidatePath('/admin/dashboard/products');
   revalidatePath('/products');
@@ -99,19 +108,19 @@ export async function addMessage(
 }
 
 export async function getMessages(): Promise<ContactMessage[]> {
-  const snapshot = await getDocs(collection(db, 'messages'));
+  const messagesCollection = collection(db, 'messages');
+  const q = query(messagesCollection, orderBy('createdAt', 'desc'));
+  const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => {
     const data = doc.data();
-    // Firebase timestamps need to be converted to Date objects
-    const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt || Date.now());
+    const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
     return {
       id: doc.id,
       ...data,
-      createdAt: createdAt,
+      createdAt,
     } as ContactMessage;
   });
 }
-
 
 // Orders
 export async function addOrder(orderData: {
@@ -126,4 +135,20 @@ export async function addOrder(orderData: {
         ...orderData,
         timestamp: serverTimestamp(),
     });
+    revalidatePath('/admin/dashboard/orders');
 }
+
+export async function getOrders(): Promise<Order[]> {
+    const ordersCollection = collection(db, 'orders');
+    const q = query(ordersCollection, orderBy('timestamp', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const timestamp = data.timestamp instanceof Timestamp ? data.timestamp.toDate() : new Date();
+      return {
+        id: doc.id,
+        ...data,
+        timestamp,
+      } as Order;
+    });
+  }
