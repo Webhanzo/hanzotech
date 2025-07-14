@@ -1,20 +1,17 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ProductRecommendations from '@/components/product-recommendations';
 import AddToCartButton from './add-to-cart-button';
-import { getProducts } from '@/lib/firebase/firestore';
+import { products } from '@/lib/products'; // Use local products
 
 export async function generateStaticParams() {
-  const products = await getProducts();
   return products.map((product) => ({
     slug: product.slug,
   }));
 }
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const products = await getProducts();
   const product = products.find((p) => p.slug === params.slug);
 
   if (!product) {

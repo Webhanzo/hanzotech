@@ -1,6 +1,102 @@
-// This file is no longer the primary source of truth for products.
-// Data is now fetched from Firestore.
-// This file can be kept for reference or removed.
 import type { Product } from './types';
 
-export const products: Product[] = [];
+export const products: Product[] = [
+    {
+      "id": "-OLuwW7t_F5LBDh3_kS8",
+      "slug": "laptop",
+      "category": "Laptops",
+      "condition": "Used",
+      "description": "dsfdsfsdf",
+      "longDescription": "This is a longer description for the used laptop. It provides more details about the specifications and condition.",
+      "image": "https://th.bing.com/th/id/OIP.HF3_zA2w_jrg85YnuM1IlQHaEh?rs=1&pid=ImgDetMain",
+      "name": "Laptop",
+      "price": 400,
+      "featured": true,
+      "featured2": false,
+      "timestamp": new Date()
+    },
+    {
+      "id": "-OLvJColxHDp6KHs9Hqy",
+      "slug": "lenovo-1",
+      "category": "Laptops",
+      "condition": "Used",
+      "description": "hsdfkj",
+      "longDescription": "This is a longer description for the used Lenovo laptop. It provides more details about the specifications and condition.",
+      "image": "https://scontent.famm2-3.fna.fbcdn.net/v/t39.30808-6/484398328_660181293534784_838721784984225036_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=dyHaCFQVv6MQ7kNvgGHcCHJ&_nc_oc=AdkbVyDgjoqq8eBsLMoQ6wkyVyHIuejfxbuhv2h0DKxktfVY0NOM_vqEfceLEdjTSAA&_nc_zt=23&_nc_ht=scontent.famm2-3.fna&_nc_gid=db7fNO-jh4Q6uyaprl57sw&oh=00_AYFTU3Y2Z1MD2lA8Xn3KmqFIUb2B2cvJpLteQNfTeTUC6Q&oe=67E3F162",
+      "name": "Lenovo",
+      "price": 200,
+      "featured": false,
+      "featured2": true,
+      "timestamp": new Date()
+    },
+    {
+      "id": "-OLvmhGaCg6m_BTZYeQA",
+      "slug": "lenovo-2",
+      "category": "Laptops",
+      "condition": "New",
+      "description": "Processor : Core I5 -8350U\nMemory :16 GB",
+      "longDescription": "Brand new Lenovo laptop with Core i5 8th gen processor and 16GB of RAM. Perfect for work and entertainment.",
+      "image": "https://th.bing.com/th/id/R.10d1622367b1a60529d10492a4e69643?rik=6Cgofqx0XQUPYA&pid=ImgRaw&r=0",
+      "name": "Lenovo",
+      "price": 179,
+      "featured": true,
+      "featured2": true,
+      "timestamp": new Date()
+    },
+    {
+      "id": "-OLztMiqWXEYw37RlJLN",
+      "slug": "generic-phone",
+      "category": "Phones",
+      "condition": "New",
+      "description": "sdfsfdsdfsfd",
+      "longDescription": "A brand new smartphone with a great camera and long-lasting battery. Comes with all original accessories.",
+      "image": "https://cdn.pixabay.com/photo/2017/04/03/15/52/mobile-phone-2198770_1280.png",
+      "name": "sjkdfhksjdfhksj",
+      "price": 20,
+      "featured": false,
+      "featured2": false,
+      "timestamp": new Date()
+    },
+    {
+      "id": "-OMJkeiOJSqiGKOS5RQl",
+      "slug": "akrama-laptop",
+      "category": "Laptops",
+      "condition": "New",
+      "description": "عكرما ",
+      "longDescription": "A special edition laptop with unique features and design. Limited stock available.",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsJA3F0yHwkzM4Wi1qVitT20dmTd2iXJUkuCgh8bIWz2tDq1znv_AkSWw&s",
+      "name": "عكرما ",
+      "price": 10,
+      "featured": true,
+      "featured2": true,
+      "timestamp": new Date()
+    },
+    {
+      "id": "-OMO_yoGh3W0K6rC2QmJ",
+      "slug": "dfgdfgdg-phone",
+      "category": "Laptops",
+      "condition": "New",
+      "description": "dfgdfgdgf",
+      "longDescription": "Another great device for your collection. High performance and sleek design.",
+      "image": "https://cdn.pixabay.com/photo/2017/04/03/15/52/mobile-phone-2198770_1280.png",
+      "name": "dfgdfgdg",
+      "price": 150,
+      "featured": false,
+      "featured2": true,
+      "timestamp": new Date()
+    },
+    {
+      "id": "-OMiZYM6LLYcHkxRfpsA",
+      "slug": "test-product",
+      "category": "Laptops",
+      "condition": "New",
+      "description": "dsfsdfsdfsf",
+      "longDescription": "This is a test product for demonstration purposes. It has a placeholder description and image.",
+      "image": "https://scontent.famm2-3.fna.fbcdn.net/v/t39.30808-6/484398328_660181293534784_838721784984225036_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=qYVceVTWJ6EQ7kNvgGihvai&_nc_oc=Admec1rSlAtW0-QKKvWG5Nhm66_jQIlCc2TWaUm3RTBM98L1Uio72dD5xLYHhFAKgiA&_nc_zt=23&_nc_ht=scontent.famm2-3.fna&_nc_gid=NEPQb9MGdZGs3kIjGiUKfw&oh=00_AYHfypiXA9RHNSaHhAwLuKL_YdxLZTsq4IOuxc20EfciTw&oe=67F0E822",
+      "name": "Test",
+      "price": 50,
+      "featured": true,
+      "featured2": false,
+      "timestamp": new Date()
+    }
+];

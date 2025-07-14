@@ -9,8 +9,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Menu, Search, ShoppingCart, UserCog } from 'lucide-react';
 import { useCart } from '@/context/cart-provider';
-import { useEffect, useState } from 'react';
-import { getDocument } from '@/lib/firebase/firestore';
 
 const navLinks = [
   { href: '/', label: 'الرئيسية' },
@@ -19,20 +17,13 @@ const navLinks = [
   { href: '/contact', label: 'اتصل بنا' },
 ];
 
+const headerData = { 
+    logo: "https://res.cloudinary.com/dgx08zujs/image/upload/v1742782985/476020761_630805223139058_9077737273465101288_n-removebg-preview_woaols.png" 
+};
+
 export default function Header() {
   const pathname = usePathname();
   const { itemCount } = useCart();
-  const [headerData, setHeaderData] = useState({ logo: "https://placehold.co/40x40.png" });
-
-  useEffect(() => {
-    async function fetchHeaderData() {
-        const data = await getDocument('site', 'header');
-        if (data) {
-            setHeaderData(data);
-        }
-    }
-    fetchHeaderData();
-  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

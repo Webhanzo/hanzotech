@@ -1,32 +1,30 @@
-// src/app/admin/dashboard/orders/page.tsx
-import { getOrders } from '@/lib/firebase/firestore';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import {
     Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
   } from "@/components/ui/accordion"
-import { format } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminOrdersPage() {
-  const orders = await getOrders();
-
-  const sortedOrders = orders.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    const sortedOrders: any[] = [];
 
   return (
     <div className="p-4 md:p-6">
       <h1 className="mb-6 text-2xl font-bold">طلبات العملاء</h1>
+      <Card>
+        <CardHeader>
+            <CardTitle>الوظيفة معطلة</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-muted-foreground">تم تعطيل عرض الطلبات لأنه تم إزالة الاتصال بقاعدة البيانات.</p>
+        </CardContent>
+      </Card>
+      {/* 
       {sortedOrders.length === 0 ? (
         <p className="text-muted-foreground">لا توجد طلبات لعرضها.</p>
       ) : (
@@ -42,7 +40,7 @@ export default async function AdminOrdersPage() {
               <AccordionContent className="p-6 pt-0">
                 <div className="space-y-4">
                     <div>
-                        <p><strong>تاريخ الطلب:</strong> {format(order.timestamp, 'PPpp')}</p>
+                        <p><strong>تاريخ الطلب:</strong> {new Date(order.timestamp).toLocaleDateString()}</p>
                         <p><strong>طريقة الاستلام:</strong> {order.deliveryMethod === 'delivery' ? 'توصيل' : 'استلام'}</p>
                         {order.deliveryMethod === 'delivery' && (
                             <>
@@ -70,7 +68,8 @@ export default async function AdminOrdersPage() {
             </AccordionItem>
           ))}
         </Accordion>
-      )}
+      )} 
+      */}
     </div>
   );
 }

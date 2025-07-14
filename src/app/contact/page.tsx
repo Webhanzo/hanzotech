@@ -10,7 +10,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
-import { addMessage } from '@/lib/firebase/firestore';
 import { useState } from 'react';
 
 const formSchema = z.object({
@@ -33,8 +32,12 @@ export default function ContactPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     try {
-        await addMessage(values);
+        console.log("Form submitted (no DB connection):", values);
         toast({
             title: "تم إرسال الرسالة بنجاح!",
             description: "شكراً لتواصلك معنا. سنقوم بالرد في أقرب وقت ممكن.",

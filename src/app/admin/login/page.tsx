@@ -13,13 +13,15 @@ import { useToast } from '@/hooks/use-toast';
 import { LogIn } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'الرجاء إدخال بريد إلكتروني صالح.' }),
   password: z.string().min(6, { message: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.' }),
 });
+
+// Hardcoded credentials as requested
+const ADMIN_EMAIL = 'Yazan.Admin@Hanzo.com';
+const ADMIN_PASSWORD = 'Xoo0#benn@xsok.2025';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -30,7 +32,7 @@ export default function AdminLoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'Yazan.Admin@Hanzo.com',
+      email: ADMIN_EMAIL,
       password: '',
     },
   });
@@ -38,24 +40,24 @@ export default function AdminLoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     setError(null);
-    try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (values.email === ADMIN_EMAIL && values.password === ADMIN_PASSWORD) {
+      // Mock successful login by storing a value in localStorage
+      localStorage.setItem('adminUser', JSON.stringify({ email: values.email }));
       toast({
         title: "تم تسجيل الدخول بنجاح!",
         description: "مرحباً بك في لوحة التحكم.",
         className: 'bg-accent text-accent-foreground border-0',
       });
       router.push('/admin/dashboard');
-    } catch (err: any) {
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
-      } else {
-        setError('حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى.');
-        console.error(err);
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
     }
+    
+    setLoading(false);
   }
 
   return (

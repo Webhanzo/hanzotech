@@ -5,7 +5,7 @@ import type { Product, Product as ProductType } from '@/lib/types';
 import { getProductRecommendations } from '@/ai/flows/product-recommendations';
 import ProductCard from './product-card';
 import { Skeleton } from './ui/skeleton';
-import { getProducts } from '@/lib/firebase/firestore';
+import { products } from '@/lib/products'; // Use local products
 
 async function getRecommendationsAction(product: ProductType) {
   'use server';
@@ -25,15 +25,7 @@ async function getRecommendationsAction(product: ProductType) {
 export default function ProductRecommendations({ product }: { product: ProductType }) {
   const [recommendations, setRecommendations] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-        const productsFromDb = await getProducts();
-        setAllProducts(productsFromDb);
-    }
-    fetchProducts();
-  }, [])
+  const [allProducts, setAllProducts] = useState<Product[]>(products);
 
   useEffect(() => {
     if (allProducts.length === 0) return;

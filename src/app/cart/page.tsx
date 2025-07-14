@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, ShoppingBag } from 'lucide-react';
-import { addOrder } from '@/lib/firebase/firestore';
 import { useState } from 'react';
 
 const checkoutSchema = z.object({
@@ -50,8 +49,12 @@ export default function CartPage() {
 
   async function onSubmit(values: z.infer<typeof checkoutSchema>) {
     setIsSubmitting(true);
+    
+    // Simulate API call since Firebase is removed
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     try {
-        await addOrder({ ...values, items: state.items });
+        console.log("Order submitted (no DB connection):", { ...values, items: state.items });
         toast({
             title: "تم إرسال الطلب بنجاح!",
             description: "شكراً لطلبك. سنتواصل معك قريباً لتأكيد التفاصيل.",

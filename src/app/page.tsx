@@ -3,23 +3,31 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import type { Product } from '@/lib/types';
 import { ArrowLeft } from 'lucide-react';
-import { getProducts, getSiteData } from '@/lib/firebase/firestore';
+import { products as allProducts } from '@/lib/products'; // Using local products
 
 export const dynamic = 'force-dynamic';
 
+// Static site data since Firebase is removed
+const siteData = {
+    homeImage: "https://scontent.famm2-3.fna.fbcdn.net/v/t39.30808-6/476406405_630805916472322_2308860158059805573_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=84T9u_oCG5UQ7kNvgFXNwzO&_nc_oc=AdnOr8923wZTo4dl072_laxaGoUUbg8aMbrrx2EtbRUtTSXL5lwq5FQYo7mbLc6Lv3U&_nc_zt=23&_nc_ht=scontent.famm2-3.fna&_nc_gid=VPC8A_8YJ-JO-lxIBF3oCw&oh=00_AYHzEyz1o5DgZqD9XuDFT5NKmNiI9CPw636xWQUqAI68Tg&oe=67E67E15",
+    featuredImages: [
+        "https://www.webmotors.com.br/wp-content/uploads/2022/11/08131522/Royal-Enfield-Super-Meteor-650-10.jpg",
+        "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6504/6504566_rd.jpg",
+        "https://res.cloudinary.com/dgx08zujs/image/upload/v1743468922/484398328_660181293534784_838721784984225036_n_1_dtklrj.jpg"
+    ],
+    featuredImages2: [
+        "https://scontent.famm2-3.fna.fbcdn.net/v/t39.30808-6/484398328_660181293534784_838721784984225036_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=qYVceVTWJ6EQ7kNvgGihvai&_nc_oc=Admec1rSlAtW0-QKKvWG5Nhm66_jQIlCc2TWaUm3RTBM98L1Uio72dD5xLYHhFAKgiA&_nc_zt=23&_nc_ht=scontent.famm2-3.fna&_nc_gid=NEPQb9MGdZGs3kIjGiUKfw&oh=00_AYHfypiXA9RHNSaHhAwLuKL_YdxLZTsq4IOuxc20EfciTw&oe=67F0E822",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsJA3F0yHwkzM4Wi1qVitT20dmTd2iXJUkuCgh8bIWz2tDq1znv_AkSWw&s",
+    ]
+};
+
 export default async function Home() {
-  const products = await getProducts();
-  const siteData = await getSiteData();
-
-  const featuredProducts = products.filter((p) => p.featured);
-  const featuredProducts2 = products.filter((p) => p.featured2);
-
+  const featuredProducts = allProducts.filter((p) => p.featured);
+  const featuredProducts2 = allProducts.filter((p) => p.featured2);
   const homeImage = siteData?.homeImage || "https://placehold.co/1920x1080/1d3557/ffffff?text=Hero";
   const featuredImages = siteData?.featuredImages || [];
   const featuredImages2 = siteData?.featuredImages2 || [];
-
 
   return (
     <div className="flex flex-col items-center">
@@ -31,6 +39,7 @@ export default async function Home() {
           objectFit="cover"
           className="z-[-1]"
           data-ai-hint="background technology"
+          priority
         />
         <div className="absolute inset-0 bg-black/50 z-[-1]"></div>
         <div className="container mx-auto px-4 md:px-6">

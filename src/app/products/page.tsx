@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import ProductCard from '@/components/product-card';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -8,28 +8,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getProducts } from '@/lib/firebase/firestore';
+import { products } from '@/lib/products'; // Use local products
 import { Skeleton } from '@/components/ui/skeleton';
 
 const categories = ['جميع المنتجات', 'Laptops', 'Phones'];
 
 export default function ProductsPage() {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allProducts] = useState<Product[]>(products);
+  const [loading] = useState(false); // No loading needed for static data
   const [activeCategory, setActiveCategory] = useState('جميع المنتجات');
   const [sortOption, setSortOption] = useState('default');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      const productsFromDb = await getProducts();
-      setAllProducts(productsFromDb);
-      setLoading(false);
-    };
-    fetchProducts();
-  }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = allProducts;
