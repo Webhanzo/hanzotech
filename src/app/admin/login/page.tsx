@@ -10,12 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn, UserPlus } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'الرجاء إدخال بريد إلكتروني صالح.' }),
@@ -31,7 +30,7 @@ export default function AdminLoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      email: 'Yazan.Admin@Hanzo.com',
       password: '',
     },
   });
@@ -48,7 +47,7 @@ export default function AdminLoginPage() {
       });
       router.push('/admin/dashboard');
     } catch (err: any) {
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
         setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
       } else {
         setError('حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى.');
@@ -98,7 +97,7 @@ export default function AdminLoginPage() {
                   <FormItem>
                     <FormLabel>كلمة المرور</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="******" {...field} disabled={loading} />
+                      <Input type="password" placeholder="******" {...field} disabled={loading} autoFocus />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -111,16 +110,10 @@ export default function AdminLoginPage() {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <p className="text-xs text-muted-foreground">
-            لا تملك حساب؟
-          </p>
-          <Button variant="outline" className="w-full" asChild>
-            <Link href="/admin/signup">
-                إنشاء حساب مشرف جديد
-                <UserPlus className="ms-2 h-4 w-4" />
-            </Link>
-          </Button>
+         <CardFooter>
+            <p className="text-xs text-muted-foreground mx-auto">
+                هذه الصفحة مخصصة للمشرفين فقط.
+            </p>
         </CardFooter>
       </Card>
     </div>
