@@ -42,13 +42,13 @@ export default async function Footer() {
           <div className="flex flex-col items-center md:items-start">
             <h3 className="font-headline mb-4 text-lg font-semibold">تابعنا</h3>
             <div className="flex gap-4">
-              <Link href={footerData.facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+              <Link href={footerData.facebook || '#'} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                 <Facebook className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
-              <Link href={footerData.instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              <Link href={footerData.instagram || '#'} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                 <Instagram className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
-              <Link href={footerData.whatsapp} aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+              <Link href={footerData.whatsapp || '#'} aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
                 <Phone className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
               </Link>
             </div>
