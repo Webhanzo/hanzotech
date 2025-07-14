@@ -1,3 +1,6 @@
+// src/app/page.tsx
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -5,14 +8,39 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ArrowLeft } from 'lucide-react';
 import { getProducts, getHomeImage, getFeaturedImages } from '@/lib/firebase/database';
+import { useEffect, useState, useRef } from 'react';
+import Autoplay from 'embla-carousel-autoplay';
+import type { Product } from '@/lib/types';
 
-export const dynamic = 'force-dynamic';
+export default function Home() {
+  const [homeImage, setHomeImage] = useState("https://placehold.co/1920x1080/1d3557/ffffff?text=Hero");
+  const [featuredImages, setFeaturedImages] = useState<string[]>([]);
+  const [featuredImages2, setFeaturedImages2] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function Home() {
-  const allProducts = await getProducts();
-  const homeImage = await getHomeImage() || "https://placehold.co/1920x1080/1d3557/ffffff?text=Hero";
-  const featuredImages = await getFeaturedImages('featuredImages') || [];
-  const featuredImages2 = await getFeaturedImages('featuredImages2') || [];
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true })
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [homeImg, featuredImg, featuredImg2] = await Promise.all([
+          getHomeImage(),
+          getFeaturedImages('featuredImages'),
+          getFeaturedImages('featuredImages2')
+        ]);
+        if (homeImg) setHomeImage(homeImg);
+        if (featuredImg) setFeaturedImages(featuredImg);
+        if (featuredImg2) setFeaturedImages2(featuredImg2);
+      } catch (error) {
+        console.error("Failed to fetch homepage data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="flex flex-col items-center">
@@ -99,6 +127,9 @@ export default async function Home() {
               loop: true,
               direction: 'rtl',
             }}
+            plugins={[autoplayPlugin.current]}
+            onMouseEnter={autoplayPlugin.current.stop}
+            onMouseLeave={autoplayPlugin.current.reset}
             className="w-full"
           >
             <CarouselContent>
