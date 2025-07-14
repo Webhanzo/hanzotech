@@ -12,13 +12,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function EditProductPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { toast } = useToast();
+  const { id } = params;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (params.id) {
-      getProductById(params.id)
+    if (id) {
+      getProductById(id)
         .then((data) => {
           if (data) {
             setProduct(data);
@@ -30,12 +31,12 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         .catch(console.error)
         .finally(() => setLoading(false));
     }
-  }, [params.id, router, toast]);
+  }, [id, router, toast]);
 
   const handleSubmit = async (values: Partial<Product>) => {
     setIsSubmitting(true);
     try {
-      await updateProduct(params.id, values);
+      await updateProduct(id, values);
       toast({
         title: 'تم التحديث بنجاح',
         description: 'تم تحديث بيانات المنتج.',
