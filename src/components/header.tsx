@@ -69,7 +69,7 @@ export default function Header() {
                 pathname.startsWith('/admin') ? 'text-primary' : 'text-foreground/60'
               )}
             >
-             دخول المشرف
+             دخول
             </Link>
         </nav>
 
@@ -131,7 +131,7 @@ export default function Header() {
                     )}
                   >
                     <UserCog className="h-5 w-5" />
-                    دخول المشرف
+                    دخول
                   </Link>
                 </nav>
               </div>
