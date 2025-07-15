@@ -12,43 +12,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'placehold.co',
+        hostname: '**',
       },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'scontent.famm2-3.fna.fbcdn.net',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.webmotors.com.br',
-      },
-      {
-        protocol: 'https',
-        hostname: 'pisces.bbystatic.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'th.bing.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn.pixabay.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'encrypted-tbn0.gstatic.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.google.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.freepik.com',
+       {
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },
