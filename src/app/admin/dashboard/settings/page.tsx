@@ -39,7 +39,7 @@ const settingsSchema = z.object({
   adText: z.string().min(1, 'الحقل مطلوب'),
   adVisible: z.boolean(),
   adWidth: z.coerce.number().min(100, "العرض يجب أن يكون 100 على الأقل").max(500, "العرض يجب أن يكون 500 على الأكثر"),
-  adPosition: z.enum(['bottom-left', 'bottom-right', 'top-left', 'top-right']),
+  adPosition: z.enum(['bottom-left', 'bottom-right', 'top-left', 'top-right', 'center']),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -232,6 +232,7 @@ export default function SettingsPage() {
                                   <SelectItem value="bottom-right">أسفل اليمين</SelectItem>
                                   <SelectItem value="top-left">أعلى اليسار</SelectItem>
                                   <SelectItem value="top-right">أعلى اليمين</SelectItem>
+                                  <SelectItem value="center">وسط الشاشة</SelectItem>
                               </SelectContent>
                           </Select>
                           <FormMessage />

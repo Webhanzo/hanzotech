@@ -60,7 +60,7 @@ export async function getHomeImage() {
 }
     
 export async function getSpecialAd() {
-    return getDocument<{ image: string; link: string; text: string; visible: boolean; adWidth?: number; adPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'; }>('specialAds');
+    return getDocument<{ image: string; link: string; text: string; visible: boolean; adWidth?: number; adPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right' | 'center'; }>('specialAds');
 }
 
 

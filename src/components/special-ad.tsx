@@ -1,3 +1,4 @@
+// src/components/special-ad.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,7 +16,7 @@ type SpecialAdData = {
     text: string;
     visible: boolean;
     adWidth?: number;
-    adPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+    adPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right' | 'center';
 }
 
 export default function SpecialAd() {
@@ -43,14 +44,25 @@ export default function SpecialAd() {
     'bottom-right': 'bottom-5 end-5',
     'top-left': 'top-5 start-5',
     'top-right': 'top-5 end-5',
+    'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+  }
+
+  const animationClasses = {
+    'bottom-left': 'animate-in fade-in slide-in-from-bottom-5',
+    'bottom-right': 'animate-in fade-in slide-in-from-bottom-5',
+    'top-left': 'animate-in fade-in slide-in-from-top-5',
+    'top-right': 'animate-in fade-in slide-in-from-top-5',
+    'center': 'animate-in fade-in zoom-in-95',
   }
 
   const adWidth = adData.adWidth || 256;
+  const adPosition = adData.adPosition || 'bottom-left';
 
   return (
     <div className={cn(
-        "fixed z-50 animate-in fade-in slide-in-from-bottom-5",
-         positionClasses[adData.adPosition || 'bottom-left']
+        "fixed z-50",
+         positionClasses[adPosition],
+         animationClasses[adPosition]
          )}>
       <Card style={{width: `${adWidth}px`}} className="overflow-hidden shadow-2xl">
         <CardContent className="p-0">
