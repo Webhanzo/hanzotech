@@ -49,7 +49,22 @@ export default function ContentManagementPage() {
   
   const form = useForm<ContentFormValues>({
     resolver: zodResolver(contentSchema),
-    defaultValues: {},
+    defaultValues: {
+      heroTitle: '',
+      heroSubtitle: '',
+      aboutTitle: '',
+      aboutSubtitle: '',
+      aboutParagraph: '',
+      aboutListTitle: '',
+      aboutListItem1: '',
+      aboutListItem2: '',
+      aboutListItem3: '',
+      aboutListItem4: '',
+      aboutCtaTitle: '',
+      aboutCtaParagraph: '',
+      aboutClosingLine: '',
+      aboutImage: '',
+    },
   });
 
   useEffect(() => {
