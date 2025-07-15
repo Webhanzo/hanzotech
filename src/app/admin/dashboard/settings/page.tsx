@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { getDocument, updateDocument } from '@/lib/firebase/database';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Define the schema based on the database structure
 const settingsSchema = z.object({
@@ -37,6 +38,8 @@ const settingsSchema = z.object({
   adLink: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
   adText: z.string().min(1, 'الحقل مطلوب'),
   adVisible: z.boolean(),
+  adWidth: z.coerce.number().min(100, "العرض يجب أن يكون 100 على الأقل").max(500, "العرض يجب أن يكون 500 على الأكثر"),
+  adPosition: z.enum(['bottom-left', 'bottom-right', 'top-left', 'top-right']),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -50,6 +53,8 @@ export default function SettingsPage() {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       adVisible: false,
+      adWidth: 256,
+      adPosition: 'bottom-left',
     },
   });
 
@@ -77,6 +82,8 @@ export default function SettingsPage() {
             adLink: specialAds?.link || '',
             adText: specialAds?.text || '',
             adVisible: specialAds?.visible || false,
+            adWidth: specialAds?.adWidth || 256,
+            adPosition: specialAds?.adPosition || 'bottom-left',
         };
         form.reset(settingsData);
       } catch (error) {
@@ -112,7 +119,9 @@ export default function SettingsPage() {
                 image: values.adImage,
                 link: values.adLink,
                 text: values.adText,
-                visible: values.adVisible
+                visible: values.adVisible,
+                adWidth: values.adWidth,
+                adPosition: values.adPosition,
             })
         ]);
 
@@ -207,6 +216,28 @@ export default function SettingsPage() {
                     <FormField control={form.control} name="adLink" render={({ field }) => (
                         <FormItem><FormLabel>رابط الإعلان (عند الضغط)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )}/>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <FormField control={form.control} name="adWidth" render={({ field }) => (
+                          <FormItem><FormLabel>عرض الإعلان (بكسل)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                      )}/>
+                       <FormField control={form.control} name="adPosition" render={({ field }) => (
+                          <FormItem>
+                          <FormLabel>موقع الإعلان</FormLabel>
+                          <Select dir="rtl" onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                              <SelectTrigger><SelectValue placeholder="اختر موقع الإعلان" /></SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                  <SelectItem value="bottom-left">أسفل اليسار</SelectItem>
+                                  <SelectItem value="bottom-right">أسفل اليمين</SelectItem>
+                                  <SelectItem value="top-left">أعلى اليسار</SelectItem>
+                                  <SelectItem value="top-right">أعلى اليمين</SelectItem>
+                              </SelectContent>
+                          </Select>
+                          <FormMessage />
+                          </FormItem>
+                      )}/>
+                    </div>
                     <FormField control={form.control} name="adVisible" render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                             <div className="space-y-0.5">
