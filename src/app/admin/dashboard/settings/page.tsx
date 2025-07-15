@@ -57,13 +57,26 @@ export default function SettingsPage() {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      adVisible: false,
-      adWidth: 256,
-      adPosition: 'bottom-left',
+      headerLogo: '',
       headerLogoWidth: 40,
       headerLogoHeight: 40,
+      footerLogo: '',
       footerLogoWidth: 50,
       footerLogoHeight: 50,
+      homeImage: '',
+      footerAbout: '',
+      phone1: '',
+      phone2: '',
+      facebook: '',
+      instagram: '',
+      whatsapp: '',
+      adImage: '',
+      adLink: '',
+      adText: '',
+      adVisible: false,
+      adWidth: 256,
+      adHeight: 256,
+      adPosition: 'bottom-left',
     },
   });
 
@@ -96,7 +109,7 @@ export default function SettingsPage() {
             adText: specialAds?.text || '',
             adVisible: specialAds?.visible || false,
             adWidth: specialAds?.adWidth || 256,
-            adHeight: specialAds?.adHeight,
+            adHeight: specialAds?.adHeight || 256,
             adPosition: specialAds?.adPosition || 'bottom-left',
         };
         form.reset(settingsData);
