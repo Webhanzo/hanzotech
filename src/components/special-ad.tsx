@@ -40,10 +40,10 @@ export default function SpecialAd() {
   }
   
   const positionClasses = {
-    'bottom-left': 'bottom-4 start-4 md:bottom-5 md:start-5',
-    'bottom-right': 'bottom-4 end-4 md:bottom-5 md:end-5',
-    'top-left': 'top-4 start-4 md:top-5 md:start-5',
-    'top-right': 'top-4 end-4 md:top-5 md:end-5',
+    'bottom-left': 'bottom-4 start-4',
+    'bottom-right': 'bottom-4 end-4',
+    'top-left': 'top-4 start-4',
+    'top-right': 'top-4 end-4',
     'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
   }
 
@@ -64,13 +64,16 @@ export default function SpecialAd() {
          positionClasses[adPosition],
          animationClasses[adPosition]
          )}>
-      <Card style={{maxWidth: '90vw', width: `${adWidth}px`}} className="overflow-hidden shadow-2xl">
+      <Card 
+        style={{ '--ad-max-width': `${adWidth}px` } as React.CSSProperties}
+        className="w-[90vw] max-w-[var(--ad-max-width)] overflow-hidden shadow-2xl md:w-auto"
+      >
         <CardContent className="relative p-0">
            <div className="absolute right-0 top-0 z-10">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-bl-lg rounded-tr-lg bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 hover:text-white"
+              className="h-9 w-9 rounded-bl-lg rounded-tr-lg bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 hover:text-white"
               onClick={() => setIsVisible(false)}
               aria-label="إغلاق الإعلان"
             >
