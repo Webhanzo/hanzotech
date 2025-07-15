@@ -91,14 +91,14 @@ export default function CartPage() {
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
             {state.items.map(item => (
-                <Card key={item.id} className="flex items-center p-4">
-                    <Image src={item.image} alt={item.name} width={100} height={100} className="rounded-md object-cover" data-ai-hint="product image" />
-                    <div className="me-4 flex-1">
+                <Card key={item.id} className="flex flex-col items-start p-4 sm:flex-row sm:items-center">
+                    <Image src={item.image} alt={item.name} width={100} height={100} className="w-full rounded-md object-cover sm:w-[100px]" data-ai-hint="product image" />
+                    <div className="me-4 mt-4 flex-1 sm:mt-0">
                         <h3 className="font-semibold">{item.name}</h3>
                         <p className="text-sm text-muted-foreground">{item.price.toLocaleString()} د.أ x {item.quantity}</p>
-                        <p className="text-lg font-bold text-primary">{(item.price * item.quantity).toLocaleString()} د.أ</p>
+                        <p className="mt-2 text-lg font-bold text-primary sm:mt-0">{(item.price * item.quantity).toLocaleString()} د.أ</p>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)}>
+                    <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)} className="mt-2 self-end sm:mt-0">
                         <Trash2 className="h-5 w-5 text-destructive" />
                     </Button>
                 </Card>

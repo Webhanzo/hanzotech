@@ -20,7 +20,7 @@ export default async function AdminProductsPage() {
 
   return (
     <div className="p-4 md:p-6">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">إدارة المنتجات</h1>
         <Button asChild>
           <Link href="/admin/dashboard/products/add">إضافة منتج جديد</Link>
@@ -28,44 +28,46 @@ export default async function AdminProductsPage() {
       </div>
 
       <div className="overflow-hidden rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>الصورة</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>السعر</TableHead>
-              <TableHead>الفئة</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">إجراءات</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    width={50}
-                    height={50}
-                    className="rounded-md object-cover"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.price.toLocaleString()} د.أ</TableCell>
-                <TableCell>
-                  {product.category === 'Laptops' ? 'لابتوب' : 'هاتف'}
-                </TableCell>
-                <TableCell>
-                  {product.condition === 'New' ? 'جديد' : 'مستعمل'}
-                </TableCell>
-                <TableCell className="text-left">
-                  <ProductActions productId={product.id} />
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="hidden sm:table-cell">الصورة</TableHead>
+                <TableHead>الاسم</TableHead>
+                <TableHead className="hidden md:table-cell">السعر</TableHead>
+                <TableHead className="hidden lg:table-cell">الفئة</TableHead>
+                <TableHead className="hidden lg:table-cell">الحالة</TableHead>
+                <TableHead className="text-left">إجراءات</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="hidden sm:table-cell">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      width={50}
+                      height={50}
+                      className="rounded-md object-cover"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="hidden md:table-cell">{product.price.toLocaleString()} د.أ</TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    {product.category === 'Laptops' ? 'لابتوب' : 'هاتف'}
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    {product.condition === 'New' ? 'جديد' : 'مستعمل'}
+                  </TableCell>
+                  <TableCell className="text-left">
+                    <ProductActions productId={product.id} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

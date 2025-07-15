@@ -21,27 +21,27 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6 lg:py-12">
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="rounded-lg border bg-card shadow-sm">
+      <div className="grid gap-8 md:grid-cols-2 lg:gap-12">
+        <div className="rounded-lg border bg-card p-4 shadow-sm">
            <Image
             src={product.image}
             alt={product.name}
             width={600}
             height={600}
-            className="h-full w-full rounded-lg object-cover"
+            className="h-full w-full rounded-lg object-contain"
             data-ai-hint="product image"
           />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col py-4">
           <Badge
             className="w-fit"
             variant={product.condition === 'New' ? 'default' : 'secondary'}
           >
             {product.condition === 'New' ? 'جديد' : 'مستعمل'}
           </Badge>
-          <h1 className="font-headline mt-4 text-3xl font-bold lg:text-4xl">{product.name}</h1>
+          <h1 className="font-headline mt-4 text-2xl font-bold md:text-3xl lg:text-4xl">{product.name}</h1>
           <p className="mt-4 text-3xl font-bold text-primary">{product.price.toLocaleString()} د.أ</p>
-          <p className="mt-6 text-lg text-muted-foreground">{product.longDescription}</p>
+          <p className="mt-6 text-base text-muted-foreground md:text-lg">{product.longDescription}</p>
           
           <div className="mt-8">
             <AddToCartButton product={product} />
@@ -50,7 +50,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
       </div>
       
       <div className="mt-16">
-        <h2 className="font-headline mb-8 text-center text-3xl font-bold tracking-tight">قد يعجبك ايضا</h2>
+        <h2 className="font-headline mb-8 text-center text-2xl font-bold tracking-tight md:text-3xl">قد يعجبك ايضا</h2>
         <ProductRecommendations product={product} />
       </div>
     </div>

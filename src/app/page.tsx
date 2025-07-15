@@ -69,7 +69,7 @@ export default function Home() {
       <section className="relative w-full py-20 md:py-32 lg:py-40">
         {loading ? <Skeleton className="absolute inset-0 z-[-1]" /> :
           <Image
-            src={homeImage}
+            src={homeImage || "https://placehold.co/1920x1080.png"}
             alt="Hero background"
             layout="fill"
             objectFit="cover"
@@ -82,19 +82,19 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6">
           <div className="mx-auto max-w-3xl text-center text-white">
              {loading ? <Skeleton className='h-16 w-3/4 mx-auto' /> :
-                <h1 className="font-headline text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl" dangerouslySetInnerHTML={{ __html: content.heroTitle || 'تقنية <span class="text-primary">متميزة</span> لك' }}></h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl" dangerouslySetInnerHTML={{ __html: content.heroTitle || 'تقنية <span class="text-primary">متميزة</span> لك' }}></h1>
             }
              {loading ? <Skeleton className='h-6 w-full mt-6 mx-auto' /> :
-                <p className="mt-6 text-lg leading-8">{content.heroSubtitle || 'اكتشف المزيج المثالي من القوة والتصميم والابتكار مع مجموعتنا المختارة من الهواتف واللاب توب'}</p>
+                <p className="mt-6 text-base leading-8 md:text-lg">{content.heroSubtitle || 'اكتشف المزيج المثالي من القوة والتصميم والابتكار مع مجموعتنا المختارة من الهواتف واللاب توب'}</p>
             }
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button asChild size="lg" variant="default">
+            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-x-6">
+              <Button asChild size="lg" variant="default" className="w-full sm:w-auto">
                 <Link href="/products">
                   تسوق الآن
                   <ArrowLeft className="ms-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="secondary">
+              <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
                 <Link href="/about">اعرف المزيد</Link>
               </Button>
             </div>
@@ -112,10 +112,10 @@ export default function Home() {
             }}
             className="w-full"
           >
-           {loading ? renderCarouselSkeleton(3, "md:basis-1/2 lg:basis-1/3") : (
+           {loading ? renderCarouselSkeleton(3, "basis-full md:basis-1/2 lg:basis-1/3") : (
               <CarouselContent>
                 {featuredProducts1.map((product) => (
-                  <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                  <CarouselItem key={product.id} className="basis-full md:basis-1/2 lg:basis-1/3">
                     <div className="p-1">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0">
@@ -158,10 +158,10 @@ export default function Home() {
             onMouseLeave={autoplayPlugin.current.reset}
             className="w-full"
           >
-            {loading ? renderCarouselSkeleton(5, "md:basis-1/2 lg:basis-1/4 xl:basis-1/5") : (
+            {loading ? renderCarouselSkeleton(5, "basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5") : (
                 <CarouselContent>
                   {featuredProducts2.map((product) => (
-                    <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/4 xl:basis-1/5">
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                       <div className="p-1">
                         <Card className="overflow-hidden">
                           <CardContent className="p-0">
