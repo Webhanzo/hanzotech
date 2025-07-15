@@ -376,7 +376,7 @@ export default function SettingsPage() {
                     <CardDescription>
                         يظهر هذا الإعلان في زاوية الشاشة بعد ثوانٍ من تحميل الموقع.
                     </CardDescription>
-                </Header>
+                </CardHeader>
                 <CardContent className='space-y-4'>
                     <FormField control={settingsForm.control} name="adImage" render={({ field }) => (
                         <FormItem><FormLabel>رابط صورة الإعلان</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
