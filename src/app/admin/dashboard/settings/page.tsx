@@ -1,7 +1,7 @@
 // src/app/admin/dashboard/settings/page.tsx
 'use client';
 
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // Define the schema based on the database structure
 const settingsSchema = z.object({
   headerLogo: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
+  headerLogoWidth: z.coerce.number().min(10).max(200).optional(),
+  headerLogoHeight: z.coerce.number().min(10).max(200).optional(),
   footerLogo: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
+  footerLogoWidth: z.coerce.number().min(10).max(200).optional(),
+  footerLogoHeight: z.coerce.number().min(10).max(200).optional(),
   homeImage: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
   footerAbout: z.string().min(1, 'الحقل مطلوب'),
   phone1: z.string().min(1, 'الحقل مطلوب'),
@@ -39,6 +43,7 @@ const settingsSchema = z.object({
   adText: z.string().min(1, 'الحقل مطلوب'),
   adVisible: z.boolean(),
   adWidth: z.coerce.number().min(100, "العرض يجب أن يكون 100 على الأقل").max(500, "العرض يجب أن يكون 500 على الأكثر"),
+  adHeight: z.coerce.number().min(100).max(500).optional(),
   adPosition: z.enum(['bottom-left', 'bottom-right', 'top-left', 'top-right', 'center']),
 });
 
@@ -55,6 +60,10 @@ export default function SettingsPage() {
       adVisible: false,
       adWidth: 256,
       adPosition: 'bottom-left',
+      headerLogoWidth: 40,
+      headerLogoHeight: 40,
+      footerLogoWidth: 50,
+      footerLogoHeight: 50,
     },
   });
 
@@ -70,7 +79,11 @@ export default function SettingsPage() {
         
         const settingsData = {
             headerLogo: header?.logo || '',
+            headerLogoWidth: header?.width || 40,
+            headerLogoHeight: header?.height || 40,
             footerLogo: footer?.logo || '',
+            footerLogoWidth: footer?.width || 50,
+            footerLogoHeight: footer?.height || 50,
             homeImage: homeImage || '',
             footerAbout: footer?.about || '',
             phone1: footer?.phone1 || '',
@@ -83,6 +96,7 @@ export default function SettingsPage() {
             adText: specialAds?.text || '',
             adVisible: specialAds?.visible || false,
             adWidth: specialAds?.adWidth || 256,
+            adHeight: specialAds?.adHeight,
             adPosition: specialAds?.adPosition || 'bottom-left',
         };
         form.reset(settingsData);
@@ -104,9 +118,15 @@ export default function SettingsPage() {
     setIsSubmitting(true);
     try {
         await Promise.all([
-            updateDocument('header', { logo: values.headerLogo }),
+            updateDocument('header', { 
+                logo: values.headerLogo,
+                width: values.headerLogoWidth,
+                height: values.headerLogoHeight,
+            }),
             updateDocument('footer', { 
                 logo: values.footerLogo,
+                width: values.footerLogoWidth,
+                height: values.footerLogoHeight,
                 about: values.footerAbout,
                 phone1: values.phone1,
                 phone2: values.phone2,
@@ -121,6 +141,7 @@ export default function SettingsPage() {
                 text: values.adText,
                 visible: values.adVisible,
                 adWidth: values.adWidth,
+                adHeight: values.adHeight,
                 adPosition: values.adPosition,
             })
         ]);
@@ -161,14 +182,33 @@ export default function SettingsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <Card>
-                <CardHeader><CardTitle>الصور والشعارات</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle>الصور والشعارات</CardTitle>
+                    <CardDescription>التحكم في شعارات الموقع والصور الرئيسية.</CardDescription>
+                </CardHeader>
                 <CardContent className='space-y-4'>
                     <FormField control={form.control} name="headerLogo" render={({ field }) => (
                         <FormItem><FormLabel>رابط شعار الهيدر</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )}/>
-                    <FormField control={form.control} name="footerLogo" render={({ field }) => (
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField control={form.control} name="headerLogoWidth" render={({ field }) => (
+                            <FormItem><FormLabel>عرض شعار الهيدر (px)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="headerLogoHeight" render={({ field }) => (
+                            <FormItem><FormLabel>ارتفاع شعار الهيدر (px)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                    </div>
+                     <FormField control={form.control} name="footerLogo" render={({ field }) => (
                         <FormItem><FormLabel>رابط شعار الفوتر</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )}/>
+                     <div className="grid grid-cols-2 gap-4">
+                        <FormField control={form.control} name="footerLogoWidth" render={({ field }) => (
+                            <FormItem><FormLabel>عرض شعار الفوتر (px)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="footerLogoHeight" render={({ field }) => (
+                            <FormItem><FormLabel>ارتفاع شعار الفوتر (px)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                    </div>
                     <FormField control={form.control} name="homeImage" render={({ field }) => (
                         <FormItem><FormLabel>رابط صورة الخلفية الرئيسية (Hero)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )}/>
@@ -217,28 +257,31 @@ export default function SettingsPage() {
                         <FormItem><FormLabel>رابط الإعلان (عند الضغط)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <FormField control={form.control} name="adWidth" render={({ field }) => (
-                          <FormItem><FormLabel>عرض الإعلان (بكسل)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                      )}/>
-                       <FormField control={form.control} name="adPosition" render={({ field }) => (
-                          <FormItem>
-                          <FormLabel>موقع الإعلان</FormLabel>
-                          <Select dir="rtl" onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                              <SelectTrigger><SelectValue placeholder="اختر موقع الإعلان" /></SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                  <SelectItem value="bottom-left">أسفل اليسار</SelectItem>
-                                  <SelectItem value="bottom-right">أسفل اليمين</SelectItem>
-                                  <SelectItem value="top-left">أعلى اليسار</SelectItem>
-                                  <SelectItem value="top-right">أعلى اليمين</SelectItem>
-                                  <SelectItem value="center">وسط الشاشة</SelectItem>
-                              </SelectContent>
-                          </Select>
-                          <FormMessage />
-                          </FormItem>
-                      )}/>
+                        <FormField control={form.control} name="adWidth" render={({ field }) => (
+                            <FormItem><FormLabel>عرض الإعلان (بكسل)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="adHeight" render={({ field }) => (
+                            <FormItem><FormLabel>طول الإعلان (بكسل، اختياري)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
                     </div>
+                     <FormField control={form.control} name="adPosition" render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>موقع الإعلان</FormLabel>
+                        <Select dir="rtl" onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger><SelectValue placeholder="اختر موقع الإعلان" /></SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="bottom-left">أسفل اليسار</SelectItem>
+                                <SelectItem value="bottom-right">أسفل اليمين</SelectItem>
+                                <SelectItem value="top-left">أعلى اليسار</SelectItem>
+                                <SelectItem value="top-right">أعلى اليمين</SelectItem>
+                                <SelectItem value="center">وسط الشاشة</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}/>
                     <FormField control={form.control} name="adVisible" render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                             <div className="space-y-0.5">

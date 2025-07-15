@@ -14,10 +14,15 @@ export default async function Footer() {
     logo: "https://placehold.co/50x50",
     phone1: "N/A",
     phone2: "N/A",
-    whatsapp: "#"
+    whatsapp: "#",
+    width: 50,
+    height: 50,
   };
 
   const data = footerData || defaultData;
+  const logoWidth = data.width || 50;
+  const logoHeight = data.height || 50;
+
 
   return (
     <footer className="bg-secondary text-secondary-foreground">
@@ -28,9 +33,9 @@ export default async function Footer() {
               <Image
                 src={data.logo}
                 alt="HANZO Logo"
-                width={50}
-                height={50}
-                className="rounded-full"
+                width={logoWidth}
+                height={logoHeight}
+                className="rounded-full max-w-[80px] max-h-[80px] object-contain"
                 data-ai-hint="logo"
               />
               <span className="font-headline text-2xl font-bold">HANZO</span>

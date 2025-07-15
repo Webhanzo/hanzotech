@@ -16,6 +16,7 @@ type SpecialAdData = {
     text: string;
     visible: boolean;
     adWidth?: number;
+    adHeight?: number;
     adPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right' | 'center';
 }
 
@@ -56,6 +57,7 @@ export default function SpecialAd() {
   }
 
   const adWidth = adData.adWidth || 256;
+  const adHeight = adData.adHeight;
   const adPosition = adData.adPosition || 'bottom-left';
 
   return (
@@ -66,7 +68,7 @@ export default function SpecialAd() {
          )}>
       <Card 
         style={{ '--ad-max-width': `${adWidth}px` } as React.CSSProperties}
-        className="w-[90vw] max-w-[var(--ad-max-width)] overflow-hidden shadow-2xl md:w-auto"
+        className="w-[90vw] max-w-[var(--ad-max-width)] overflow-hidden shadow-2xl"
       >
         <CardContent className="relative p-0">
            <div className="absolute right-0 top-0 z-10">
@@ -85,8 +87,12 @@ export default function SpecialAd() {
               src={adData.image}
               alt={adData.text}
               width={adWidth}
-              height={Math.round(adWidth * 0.6)} // Maintain a reasonable aspect ratio
+              height={adHeight || Math.round(adWidth * 0.6)} // Maintain a reasonable aspect ratio if height is not set
               className="w-full object-cover"
+              style={{
+                height: adHeight ? `${adHeight}px` : 'auto',
+                maxHeight: adHeight ? `${adHeight}px` : '40vh'
+              }}
               data-ai-hint="special offer"
             />
             <div className="p-4">

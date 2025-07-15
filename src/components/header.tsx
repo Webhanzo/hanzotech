@@ -12,6 +12,12 @@ import { useCart } from '@/context/cart-provider';
 import { useEffect, useState } from 'react';
 import { getHeaderData } from '@/lib/firebase/database';
 
+type HeaderData = {
+  logo: string;
+  width?: number;
+  height?: number;
+}
+
 const navLinks = [
   { href: '/', label: 'الرئيسية' },
   { href: '/products', label: 'المنتجات' },
@@ -22,12 +28,20 @@ const navLinks = [
 export default function Header() {
   const pathname = usePathname();
   const { itemCount } = useCart();
-  const [logoUrl, setLogoUrl] = useState("https://placehold.co/40x40");
+  const [headerData, setHeaderData] = useState<HeaderData>({
+    logo: "https://placehold.co/40x40",
+    width: 40,
+    height: 40,
+  });
 
   useEffect(() => {
     getHeaderData().then(data => {
-        if (data?.logo) {
-            setLogoUrl(data.logo);
+        if (data) {
+            setHeaderData({
+              logo: data.logo || "https://placehold.co/40x40",
+              width: data.width || 40,
+              height: data.height || 40,
+            });
         }
     })
   }, []);
@@ -38,11 +52,11 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src={logoUrl}
+              src={headerData.logo}
               alt="HANZO Logo"
-              width={40}
-              height={40}
-              className="rounded-full"
+              width={headerData.width}
+              height={headerData.height}
+              className="rounded-full max-w-[60px] max-h-[60px] object-contain"
               data-ai-hint="logo"
             />
             <span className="font-headline text-2xl font-bold">HANZO</span>
@@ -101,11 +115,11 @@ export default function Header() {
               <div className="flex flex-col gap-6 p-6">
                 <Link href="/" className="flex items-center gap-2">
                   <Image
-                    src={logoUrl}
+                    src={headerData.logo}
                     alt="HANZO Logo"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
+                    width={headerData.width}
+                    height={headerData.height}
+                    className="rounded-full max-w-[60px] max-h-[60px] object-contain"
                     data-ai-hint="logo"
                   />
                   <span className="font-headline text-2xl font-bold">HANZO</span>
