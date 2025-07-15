@@ -91,7 +91,7 @@ export default function AboutPage() {
            </div>
            <div>
             <Image
-                src="https://placehold.co/600x700/1d3557/ffffff?text=About+Us"
+                src="https://placehold.co/600x700.png"
                 alt="فريق هانزو"
                 width={600}
                 height={700}
