@@ -40,10 +40,10 @@ export default function SpecialAd() {
   }
   
   const positionClasses = {
-    'bottom-left': 'bottom-5 start-5',
-    'bottom-right': 'bottom-5 end-5',
-    'top-left': 'top-5 start-5',
-    'top-right': 'top-5 end-5',
+    'bottom-left': 'bottom-4 start-4 md:bottom-5 md:start-5',
+    'bottom-right': 'bottom-4 end-4 md:bottom-5 md:end-5',
+    'top-left': 'top-4 start-4 md:top-5 md:start-5',
+    'top-right': 'top-4 end-4 md:top-5 md:end-5',
     'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
   }
 
@@ -64,17 +64,17 @@ export default function SpecialAd() {
          positionClasses[adPosition],
          animationClasses[adPosition]
          )}>
-      <Card style={{width: `${adWidth}px`}} className="overflow-hidden shadow-2xl">
-        <CardContent className="p-0">
-          <div className="absolute right-1 top-1 z-10">
+      <Card style={{maxWidth: '90vw', width: `${adWidth}px`}} className="overflow-hidden shadow-2xl">
+        <CardContent className="relative p-0">
+           <div className="absolute right-0 top-0 z-10">
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 rounded-full bg-black/20 text-white hover:bg-black/40 hover:text-white"
+              className="h-8 w-8 rounded-bl-lg rounded-tr-lg bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 hover:text-white"
               onClick={() => setIsVisible(false)}
               aria-label="إغلاق الإعلان"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </Button>
           </div>
           <Link href={adData.link} className="block">
