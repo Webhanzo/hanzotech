@@ -7,14 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ArrowLeft } from 'lucide-react';
-import { getProducts, getHomeImage } from '@/lib/firebase/database';
+import { getProducts, getDocument } from '@/lib/firebase/database';
 import { useEffect, useState, useRef } from 'react';
 import Autoplay from 'embla-carousel-autoplay';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
+type ContentData = {
+  heroTitle?: string;
+  heroSubtitle?: string;
+}
+
 export default function Home() {
   const [homeImage, setHomeImage] = useState("https://placehold.co/1920x1080/1d3557/ffffff?text=Hero");
+  const [content, setContent] = useState<ContentData>({});
   const [featuredProducts1, setFeaturedProducts1] = useState<Product[]>([]);
   const [featuredProducts2, setFeaturedProducts2] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,11 +32,13 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [homeImg, allProducts] = await Promise.all([
-          getHomeImage(),
+        const [homeImg, allProducts, contentData] = await Promise.all([
+          getDocument('homeImage'),
           getProducts(),
+          getDocument('content'),
         ]);
-        if (homeImg) setHomeImage(homeImg);
+        if (homeImg) setHomeImage(homeImg as string);
+        if (contentData) setContent(contentData as ContentData);
         
         setFeaturedProducts1(allProducts.filter(p => p.featured));
         setFeaturedProducts2(allProducts.filter(p => p.featured2));
@@ -59,24 +67,26 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center">
       <section className="relative w-full py-20 md:py-32 lg:py-40">
-        <Image
-          src={homeImage}
-          alt="Hero background"
-          layout="fill"
-          objectFit="cover"
-          className="z-[-1]"
-          data-ai-hint="background technology"
-          priority
-        />
+        {loading ? <Skeleton className="absolute inset-0 z-[-1]" /> :
+          <Image
+            src={homeImage}
+            alt="Hero background"
+            layout="fill"
+            objectFit="cover"
+            className="z-[-1]"
+            data-ai-hint="background technology"
+            priority
+          />
+        }
         <div className="absolute inset-0 bg-black/50 z-[-1]"></div>
         <div className="container mx-auto px-4 md:px-6">
           <div className="mx-auto max-w-3xl text-center text-white">
-            <h1 className="font-headline text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              تقنية <span className="text-primary">متميزة</span> لك
-            </h1>
-            <p className="mt-6 text-lg leading-8">
-              اكتشف المزيج المثالي من القوة والتصميم والابتكار مع مجموعتنا المختارة من الهواتف واللاب توب
-            </p>
+             {loading ? <Skeleton className='h-16 w-3/4 mx-auto' /> :
+                <h1 className="font-headline text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl" dangerouslySetInnerHTML={{ __html: content.heroTitle || 'تقنية <span class="text-primary">متميزة</span> لك' }}></h1>
+            }
+             {loading ? <Skeleton className='h-6 w-full mt-6 mx-auto' /> :
+                <p className="mt-6 text-lg leading-8">{content.heroSubtitle || 'اكتشف المزيج المثالي من القوة والتصميم والابتكار مع مجموعتنا المختارة من الهواتف واللاب توب'}</p>
+            }
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button asChild size="lg" variant="default">
                 <Link href="/products">
