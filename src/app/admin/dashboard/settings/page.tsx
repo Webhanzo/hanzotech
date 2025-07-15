@@ -55,6 +55,8 @@ const settingsSchema = z.object({
 const carouselImageSchema = z.object({
     imageUrl: z.string().url({ message: 'الرجاء إدخال رابط صورة صالح' }),
     linkUrl: z.string().url({ message: 'الرجاء إدخال رابط صالح' }).optional().or(z.literal('')),
+    width: z.coerce.number().positive('يجب أن يكون العرض رقمًا موجبًا').optional(),
+    height: z.coerce.number().positive('يجب أن يكون الارتفاع رقمًا موجبًا').optional(),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -96,7 +98,7 @@ export default function SettingsPage() {
 
   const carouselForm = useForm<z.infer<typeof carouselImageSchema>>({
     resolver: zodResolver(carouselImageSchema),
-    defaultValues: { imageUrl: '', linkUrl: '' },
+    defaultValues: { imageUrl: '', linkUrl: '', width: undefined, height: undefined },
   });
 
   async function loadData() {
@@ -203,11 +205,20 @@ export default function SettingsPage() {
   const handleCarouselSubmit = async (values: z.infer<typeof carouselImageSchema>) => {
     setIsCarouselSubmitting(true);
     let updatedImages: CarouselImage[];
+    const newValues = {
+        ...values,
+        width: values.width || undefined,
+        height: values.height || undefined,
+    };
 
     if (editingCarouselImage) {
-        updatedImages = carouselImages.map(img => img.imageUrl === editingCarouselImage.imageUrl ? values : img);
+        // Use a more reliable unique identifier if available, like an ID.
+        // If imageUrl is the only unique thing, this is okay.
+        updatedImages = carouselImages.map(img => 
+            img.imageUrl === editingCarouselImage.imageUrl ? { ...editingCarouselImage, ...newValues } : img
+        );
     } else {
-        updatedImages = [...carouselImages, values];
+        updatedImages = [...carouselImages, newValues];
     }
     
     try {
@@ -235,7 +246,7 @@ export default function SettingsPage() {
 
   const openAddCarouselDialog = () => {
     setEditingCarouselImage(null);
-    carouselForm.reset({ imageUrl: '', linkUrl: '' });
+    carouselForm.reset({ imageUrl: '', linkUrl: '', width: undefined, height: undefined });
     setIsCarouselDialogOpen(true);
   };
   
@@ -299,6 +310,14 @@ export default function SettingsPage() {
                                             <FormItem><FormLabel>الرابط (عند الضغط على الصورة)</FormLabel><FormControl><Input {...field} placeholder="اختياري، مثال: /products/some-product"/>
                                             </FormControl><FormMessage /></FormItem>
                                         )}/>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormField control={carouselForm.control} name="width" render={({ field }) => (
+                                                <FormItem><FormLabel>العرض (px)</FormLabel><FormControl><Input type="number" {...field} placeholder="اختياري، مثال: 400" /></FormControl><FormMessage /></FormItem>
+                                            )}/>
+                                            <FormField control={carouselForm.control} name="height" render={({ field }) => (
+                                                <FormItem><FormLabel>الارتفاع (px)</FormLabel><FormControl><Input type="number" {...field} placeholder="اختياري، مثال: 300" /></FormControl><FormMessage /></FormItem>
+                                            )}/>
+                                        </div>
                                         <DialogFooter>
                                             <Button type="button" variant="secondary" onClick={() => setIsCarouselDialogOpen(false)}>إلغاء</Button>
                                             <Button type="submit" disabled={isCarouselSubmitting}>{isCarouselSubmitting ? "جارٍ الحفظ..." : "حفظ"}</Button>

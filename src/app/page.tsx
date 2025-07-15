@@ -124,9 +124,13 @@ export default function Home() {
                             <Image
                               src={image.imageUrl}
                               alt={`Featured image ${index + 1}`}
-                              width={400}
-                              height={300}
-                              className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"
+                              width={image.width || 400}
+                              height={image.height || 300}
+                              className="h-auto w-full object-cover transition-transform duration-300 hover:scale-105"
+                              style={{ 
+                                height: image.height ? `${image.height}px` : 'auto', 
+                                maxHeight: '300px'
+                              }}
                               data-ai-hint="advertisement"
                             />
                           </Link>

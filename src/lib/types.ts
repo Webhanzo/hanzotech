@@ -15,6 +15,8 @@ export type Product = {
 export type CarouselImage = {
   imageUrl: string;
   linkUrl?: string;
+  width?: number;
+  height?: number;
 };
 
 export type CartItem = Product & {
