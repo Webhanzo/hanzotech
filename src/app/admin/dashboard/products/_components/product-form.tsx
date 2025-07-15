@@ -37,7 +37,6 @@ const formSchema = z.object({
   image: z.string().url({ message: 'الرجاء إدخال رابط صورة صالح' }),
   category: z.enum(['Laptops', 'Phones']),
   condition: z.enum(['New', 'Used']),
-  featured: z.boolean().default(false),
   featured2: z.boolean().default(false),
 });
 
@@ -69,7 +68,6 @@ export default function ProductForm({
           image: '',
           category: 'Laptops',
           condition: 'New',
-          featured: false,
           featured2: false,
         },
   });
@@ -199,27 +197,6 @@ export default function ProductForm({
           />
         </div>
         <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name="featured"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>مميز في القسم الأول؟</FormLabel>
-                  <FormDescription>
-                    سيظهر هذا المنتج في كاروسيل الإعلانات الأول في الصفحة
-                    الرئيسية.
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="featured2"

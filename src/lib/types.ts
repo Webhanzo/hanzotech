@@ -8,9 +8,13 @@ export type Product = {
   image: string;
   category: 'Laptops' | 'Phones';
   condition: 'New' | 'Used';
-  featured: boolean;
   featured2: boolean;
   timestamp: any;
+};
+
+export type CarouselImage = {
+  imageUrl: string;
+  linkUrl?: string;
 };
 
 export type CartItem = Product & {
@@ -34,4 +38,10 @@ export type Order = {
   landmark?: string;
   items: CartItem[];
   timestamp: Date;
+}
+
+export type AdminUser = {
+  id: string;
+  email: string;
+  password?: string; // Password should be handled securely
 }

@@ -9,7 +9,7 @@ import {
   set,
   update,
 } from 'firebase/database';
-import type { ContactMessage, Order, Product } from '../types';
+import type { AdminUser, CarouselImage, ContactMessage, Order, Product } from '../types';
 import { app } from './init';
 
 const db = getDatabase(app);
@@ -63,6 +63,21 @@ export async function getSpecialAd() {
     return getDocument<{ image: string; link: string; text: string; visible: boolean; adWidth?: number; adHeight?: number; adPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right' | 'center'; }>('specialAds');
 }
 
+// --- Carousel Functions ---
+export async function getFeaturedCarousel(): Promise<CarouselImage[]> {
+    const data = await getDocument<CarouselImage[]>('featuredCarousel');
+    return data || [];
+}
+
+export async function updateFeaturedCarousel(images: CarouselImage[]) {
+    try {
+        await set(ref(db, 'featuredCarousel'), images);
+    } catch (error) {
+        console.error("Error updating featured carousel:", error);
+        throw new Error("Failed to update featured carousel.");
+    }
+}
+
 
 // --- Product Functions ---
 
@@ -74,7 +89,6 @@ function processProduct(productData: any, id: string): Product {
         id,
         slug,
         price: isNaN(price) ? 0 : price,
-        featured: productData.featured ?? false,
         featured2: productData.featured2 ?? false,
     };
 }
@@ -100,25 +114,24 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 
-export async function addProduct(product: Omit<Product, 'id' | 'slug' | 'timestamp'>) {
-    const slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+export async function addProduct(product: Omit<Product, 'id' | 'slug' | 'timestamp' | 'featured'>) {
     const newProductRef = push(ref(db, 'products'));
     await set(newProductRef, {
         ...product,
         price: Number(product.price),
-        featured: product.featured || false,
         featured2: product.featured2 || false,
         timestamp: serverTimestamp(),
     });
     return newProductRef.key;
 }
 
-export async function updateProduct(productId: string, product: Partial<Product>) {
+export async function updateProduct(productId: string, product: Partial<Omit<Product, 'featured'>>) {
   const productRef = ref(db, `products/${productId}`);
-  await update(productRef, {
-      ...product,
-      price: Number(product.price),
-  });
+  const updateData = { ...product };
+  if (product.price) {
+    updateData.price = Number(product.price);
+  }
+  await update(productRef, updateData);
 }
 
 export async function deleteProduct(productId: string) {
@@ -175,4 +188,30 @@ export async function getOrders(): Promise<Order[]> {
         items: orderData.items,
         timestamp: new Date(orderData.timestamp),
     }));
+}
+
+
+// --- Admin User Functions ---
+
+export async function verifyUserCredentials(email: string, pass: string): Promise<boolean> {
+    const users = await getDocument<{ [key: string]: AdminUser }>('users');
+    if (!users) return false;
+    
+    const user = Object.values(users).find(u => u.email === email);
+    
+    if (user && user.password === pass) {
+        return true;
+    }
+    return false;
+}
+
+export async function addUser(user: Omit<AdminUser, 'id'>): Promise<string | null> {
+    const users = await getDocument<{ [key: string]: AdminUser }>('users');
+    if (users && Object.values(users).some(u => u.email === user.email)) {
+        throw new Error('User with this email already exists.');
+    }
+
+    const newUserRef = push(ref(db, 'users'));
+    await set(newUserRef, user);
+    return newUserRef.key;
 }

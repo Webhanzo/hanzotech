@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ArrowLeft } from 'lucide-react';
-import { getProducts, getDocument } from '@/lib/firebase/database';
+import { getProducts, getDocument, getFeaturedCarousel } from '@/lib/firebase/database';
 import { useEffect, useState, useRef } from 'react';
 import Autoplay from 'embla-carousel-autoplay';
-import type { Product } from '@/lib/types';
+import type { Product, CarouselImage } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type ContentData = {
@@ -21,7 +21,7 @@ type ContentData = {
 export default function Home() {
   const [homeImage, setHomeImage] = useState("https://placehold.co/1920x1080/1d3557/ffffff?text=Hero");
   const [content, setContent] = useState<ContentData>({});
-  const [featuredProducts1, setFeaturedProducts1] = useState<Product[]>([]);
+  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
   const [featuredProducts2, setFeaturedProducts2] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,15 +32,16 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [homeImg, allProducts, contentData] = await Promise.all([
+        const [homeImg, allProducts, contentData, carouselData] = await Promise.all([
           getDocument('homeImage'),
           getProducts(),
           getDocument('content'),
+          getFeaturedCarousel(),
         ]);
         if (homeImg) setHomeImage(homeImg as string);
         if (contentData) setContent(contentData as ContentData);
+        if (carouselData) setCarouselImages(carouselData);
         
-        setFeaturedProducts1(allProducts.filter(p => p.featured));
         setFeaturedProducts2(allProducts.filter(p => p.featured2));
 
       } catch (error) {
@@ -114,19 +115,19 @@ export default function Home() {
           >
            {loading ? renderCarouselSkeleton(3, "basis-full md:basis-1/2 lg:basis-1/3") : (
               <CarouselContent>
-                {featuredProducts1.map((product) => (
-                  <CarouselItem key={product.id} className="basis-full md:basis-1/2 lg:basis-1/3">
+                {carouselImages.map((image, index) => (
+                  <CarouselItem key={index} className="basis-full md:basis-1/2 lg:basis-1/3">
                     <div className="p-1">
                       <Card className="overflow-hidden">
                         <CardContent className="p-0">
-                          <Link href={`/products/${product.slug}`}>
+                          <Link href={image.linkUrl || '#'}>
                             <Image
-                              src={product.image}
-                              alt={product.name}
+                              src={image.imageUrl}
+                              alt={`Featured image ${index + 1}`}
                               width={400}
                               height={300}
                               className="h-64 w-full object-cover transition-transform duration-300 hover:scale-105"
-                              data-ai-hint="product image"
+                              data-ai-hint="advertisement"
                             />
                           </Link>
                         </CardContent>
