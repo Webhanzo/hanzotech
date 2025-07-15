@@ -23,21 +23,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const contentSchema = z.object({
   // Home Page
-  heroTitle: z.string().min(1, 'الحقل مطلوب'),
-  heroSubtitle: z.string().min(1, 'الحقل مطلوب'),
+  heroTitle: z.string().optional(),
+  heroSubtitle: z.string().optional(),
   // About Page
-  aboutTitle: z.string().min(1, 'الحقل مطلوب'),
-  aboutSubtitle: z.string().min(1, 'الحقل مطلوب'),
-  aboutParagraph: z.string().min(1, 'الحقل مطلوب'),
-  aboutListTitle: z.string().min(1, 'الحقل مطلوب'),
-  aboutListItem1: z.string().min(1, 'الحقل مطلوب'),
-  aboutListItem2: z.string().min(1, 'الحقل مطلوب'),
-  aboutListItem3: z.string().min(1, 'الحقل مطلوب'),
-  aboutListItem4: z.string().min(1, 'الحقل مطلوب'),
-  aboutCtaTitle: z.string().min(1, 'الحقل مطلوب'),
-  aboutCtaParagraph: z.string().min(1, 'الحقل مطلوب'),
-  aboutClosingLine: z.string().min(1, 'الحقل مطلوب'),
-  aboutImage: z.string().url({ message: 'الرجاء إدخال رابط صورة صالح' }).min(1, 'الحقل مطلوب'),
+  aboutTitle: z.string().optional(),
+  aboutSubtitle: z.string().optional(),
+  aboutParagraph: z.string().optional(),
+  aboutListTitle: z.string().optional(),
+  aboutListItem1: z.string().optional(),
+  aboutListItem2: z.string().optional(),
+  aboutListItem3: z.string().optional(),
+  aboutListItem4: z.string().optional(),
+  aboutCtaTitle: z.string().optional(),
+  aboutCtaParagraph: z.string().optional(),
+  aboutClosingLine: z.string().optional(),
+  aboutImage: z.string().url({ message: 'الرجاء إدخال رابط صورة صالح' }).or(z.literal('')).optional(),
 });
 
 type ContentFormValues = z.infer<typeof contentSchema>;
