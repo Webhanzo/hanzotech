@@ -17,6 +17,7 @@ type AboutContent = {
   aboutCtaTitle: string;
   aboutCtaParagraph: string;
   aboutClosingLine: string;
+  aboutImage: string;
 }
 
 export default function AboutPage() {
@@ -91,7 +92,7 @@ export default function AboutPage() {
            </div>
            <div>
             <Image
-                src="https://placehold.co/600x700.png"
+                src={content.aboutImage || "https://placehold.co/600x700.png"}
                 alt="فريق هانزو"
                 width={600}
                 height={700}

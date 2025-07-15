@@ -37,6 +37,7 @@ const contentSchema = z.object({
   aboutCtaTitle: z.string().min(1, 'الحقل مطلوب'),
   aboutCtaParagraph: z.string().min(1, 'الحقل مطلوب'),
   aboutClosingLine: z.string().min(1, 'الحقل مطلوب'),
+  aboutImage: z.string().url({ message: 'الرجاء إدخال رابط صورة صالح' }).min(1, 'الحقل مطلوب'),
 });
 
 type ContentFormValues = z.infer<typeof contentSchema>;
@@ -127,6 +128,9 @@ export default function ContentManagementPage() {
             <Card>
                 <CardHeader><CardTitle>محتوى صفحة "عن الشركة"</CardTitle></CardHeader>
                 <CardContent className='space-y-4'>
+                    <FormField control={form.control} name="aboutImage" render={({ field }) => (
+                        <FormItem><FormLabel>رابط صورة "عن الشركة"</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )}/>
                     <FormField control={form.control} name="aboutTitle" render={({ field }) => (
                         <FormItem><FormLabel>العنوان الرئيسي</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )}/>
