@@ -114,7 +114,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 
-export async function addProduct(product: Omit<Product, 'id' | 'slug' | 'timestamp' | 'featured'>) {
+export async function addProduct(product: Omit<Product, 'id' | 'slug' | 'timestamp'>) {
     const newProductRef = push(ref(db, 'products'));
     await set(newProductRef, {
         ...product,
@@ -125,7 +125,7 @@ export async function addProduct(product: Omit<Product, 'id' | 'slug' | 'timesta
     return newProductRef.key;
 }
 
-export async function updateProduct(productId: string, product: Partial<Omit<Product, 'featured'>>) {
+export async function updateProduct(productId: string, product: Partial<Product>) {
   const productRef = ref(db, `products/${productId}`);
   const updateData = { ...product };
   if (product.price) {
