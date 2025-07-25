@@ -19,14 +19,11 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (!currentUser && pathname !== '/admin/login') {
-        router.push('/admin/login');
-      }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
 
   const handleLogout = async () => {
@@ -50,13 +47,23 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // If not logged in and not on the login page, redirect
   if (!user && pathname !== '/admin/login') {
-    return null; // The useEffect hook will handle the redirect.
+    router.push('/admin/login');
+    return null; // Render nothing while redirecting
+  }
+  
+  // If logged in and on the login page, redirect to dashboard
+  if (user && pathname === '/admin/login') {
+      router.push('/admin/dashboard');
+      return null; // Render nothing while redirecting
   }
 
+  // If on login page (and not logged in, handled above), show login page
   if (pathname === '/admin/login') {
     return <>{children}</>;
   }
+
 
   const navItems = [
     { href: '/admin/dashboard', label: 'لوحة التحكم الرئيسية', icon: LayoutDashboard },
