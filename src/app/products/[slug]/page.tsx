@@ -1,4 +1,4 @@
-import { notFound, useRouter } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import ProductRecommendations from '@/components/product-recommendations';
