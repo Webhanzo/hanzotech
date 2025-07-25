@@ -1,3 +1,4 @@
+// src/app/admin/layout.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -25,7 +26,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [router, pathname]);
+  }, [router]);
 
 
   const handleLogout = async () => {

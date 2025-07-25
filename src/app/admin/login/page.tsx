@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast';
 import { LogIn, Terminal } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth';
 import { auth } from '@/lib/firebase/init';
 
 const formSchema = z.object({
@@ -39,6 +39,7 @@ export default function AdminLoginPage() {
     setError(null);
     
     try {
+      await setPersistence(auth, browserSessionPersistence)
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
         title: "تم تسجيل الدخول بنجاح!",
