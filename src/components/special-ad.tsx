@@ -82,7 +82,7 @@ export default function SpecialAd() {
               <X className="h-5 w-5" />
             </Button>
           </div>
-          <Link href={adData.link} className="block">
+          <Link href={adData.link} className="block" target="_blank" rel="noopener noreferrer">
             <Image
               src={adData.image}
               alt={adData.text}
@@ -91,7 +91,7 @@ export default function SpecialAd() {
               className="w-full object-cover"
               style={{
                 height: adHeight ? `${adHeight}px` : 'auto',
-                maxHeight: adHeight ? `${adHeight}px` : '40vh'
+                maxHeight: adHeight ? `${adHeight}px` : '90vh'
               }}
               data-ai-hint="special offer"
             />

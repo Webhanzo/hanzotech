@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 export default function EditProductPage({ params }: { params: { id: string } }) {
   const { id: productId } = params;
@@ -81,7 +83,13 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
   return (
     <div className="p-4 md:p-6">
-      <h1 className="mb-6 text-2xl font-bold">تعديل المنتج</h1>
+       <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">تعديل المنتج</h1>
+         <Button variant="outline" onClick={() => router.back()}>
+            <ArrowRight className="me-2 h-4 w-4" />
+            رجوع
+         </Button>
+       </div>
       <ProductForm product={product} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
     </div>
   );

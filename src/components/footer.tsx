@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, Phone } from 'lucide-react';
 import { getFooterData } from '@/lib/firebase/database';
+import SocialLink from './social-link';
 
 
 export default async function Footer() {
@@ -52,15 +53,15 @@ export default async function Footer() {
           <div className="flex flex-col items-center md:items-start">
             <h3 className="font-headline mb-4 text-lg font-semibold">تابعنا</h3>
             <div className="flex gap-4">
-              <Link href={data.facebook || '#'} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+              <SocialLink service="facebook" url={data.facebook || '#'}>
                 <Facebook className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
-              </Link>
-              <Link href={data.instagram || '#'} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              </SocialLink>
+              <SocialLink service="instagram" url={data.instagram || '#'}>
                 <Instagram className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
-              </Link>
-              <Link href={data.whatsapp || '#'} aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+              </SocialLink>
+              <SocialLink service="whatsapp" url={data.whatsapp || '#'}>
                 <Phone className="h-6 w-6 text-muted-foreground transition-colors hover:text-primary" />
-              </Link>
+              </SocialLink>
             </div>
           </div>
         </div>

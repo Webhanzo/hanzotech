@@ -1,9 +1,10 @@
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import ProductRecommendations from '@/components/product-recommendations';
 import AddToCartButton from './add-to-cart-button';
 import { getProductBySlug, getProducts } from '@/lib/firebase/database'; // Use local products
+import BackButton from '@/components/back-button';
 
 export async function generateStaticParams() {
   const products = await getProducts();
@@ -21,6 +22,9 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6 lg:py-12">
+        <div className="mb-8">
+            <BackButton>رجوع إلى المنتجات</BackButton>
+        </div>
       <div className="grid gap-8 md:grid-cols-2 lg:gap-12">
         <div className="rounded-lg border bg-card p-4 shadow-sm">
            <Image

@@ -42,13 +42,13 @@ const settingsSchema = z.object({
   phone2: z.string().min(1, 'الحقل مطلوب'),
   facebook: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
   instagram: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
-  whatsapp: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
+  whatsapp: z.string().min(1, 'الحقل مطلوب'),
   adImage: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
   adLink: z.string().url('رابط غير صالح').min(1, 'الحقل مطلوب'),
   adText: z.string().min(1, 'الحقل مطلوب'),
   adVisible: z.boolean(),
-  adWidth: z.coerce.number().min(100, "العرض يجب أن يكون 100 على الأقل").max(500, "العرض يجب أن يكون 500 على الأكثر"),
-  adHeight: z.coerce.number().min(100).max(500).optional(),
+  adWidth: z.coerce.number().min(100, "العرض يجب أن يكون 100 على الأقل"),
+  adHeight: z.coerce.number().min(100).optional(),
   adPosition: z.enum(['bottom-left', 'bottom-right', 'top-left', 'top-right', 'center']),
 });
 
@@ -151,7 +151,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     loadData();
-  }, [toast]); // removed form from dependencies
+  }, []);
   
   const onSettingsSubmit = async (values: SettingsFormValues) => {
     setIsSubmitting(true);
