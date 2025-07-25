@@ -21,9 +21,22 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
       setUser(currentUser);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+
+    // If not logged in and trying to access a protected page
+    if (!user && pathname !== '/admin/login') {
+      router.push('/admin/login');
+    }
+
+    // If logged in and on the login page
+    if (user && pathname === '/admin/login') {
+      router.push('/admin/dashboard');
+    }
+  }, [user, loading, pathname, router]);
 
 
   const handleLogout = async () => {
@@ -47,23 +60,17 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // If not logged in and not on the login page, redirect
-  if (!user && pathname !== '/admin/login') {
-    router.push('/admin/login');
-    return null; // Render nothing while redirecting
-  }
-  
-  // If logged in and on the login page, redirect to dashboard
-  if (user && pathname === '/admin/login') {
-      router.push('/admin/dashboard');
-      return null; // Render nothing while redirecting
-  }
-
-  // If on login page (and not logged in, handled above), show login page
+  // If we are on the login page, let it render.
+  // The useEffect above will handle redirection if the user is already logged in.
   if (pathname === '/admin/login') {
     return <>{children}</>;
   }
 
+  // If we are on a protected page and the user is not logged in,
+  // we return null to prevent flashing the content while redirecting.
+  if (!user) {
+    return null;
+  }
 
   const navItems = [
     { href: '/admin/dashboard', label: 'لوحة التحكم الرئيسية', icon: LayoutDashboard },
