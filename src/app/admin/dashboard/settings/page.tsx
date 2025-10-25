@@ -17,15 +17,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getDocument, updateDocument, getFeaturedCarousel, updateFeaturedCarousel } from '@/lib/firebase/database';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { PlusCircle, Trash2, Edit } from 'lucide-react';
+import { PlusCircle, Trash2, Edit, Upload } from 'lucide-react';
 import Image from 'next/image';
 import type { CarouselImage } from '@/lib/types';
+import { uploadImage } from '@/lib/firebase/storage';
 
 
 // Define the schema based on the database structure
@@ -61,6 +62,42 @@ const carouselImageSchema = z.object({
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
 
+// Helper component for image uploading
+const ImageUploadField = ({ field, label, onUpload, isUploading }: { field: any, label: string, onUpload: (file: File) => Promise<string>, isUploading: boolean }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            try {
+                const url = await onUpload(file);
+                field.onChange(url);
+            } catch (error) {
+                console.error("Upload failed", error);
+            }
+        }
+    };
+
+    return (
+        <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <div className="flex items-center gap-4">
+                <FormControl>
+                    <Input {...field} placeholder="https://..." />
+                </FormControl>
+                <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
+                    <Upload className="me-2 h-4 w-4" />
+                    {isUploading ? "جارٍ الرفع..." : "رفع"}
+                </Button>
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+            </div>
+            {field.value && <Image src={field.value} alt="Preview" width={80} height={80} className="mt-2 rounded-md object-contain" />}
+            <FormMessage />
+        </FormItem>
+    );
+};
+
+
 export default function SettingsPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -69,7 +106,23 @@ export default function SettingsPage() {
   const [isCarouselSubmitting, setIsCarouselSubmitting] = useState(false);
   const [isCarouselDialogOpen, setIsCarouselDialogOpen] = useState(false);
   const [editingCarouselImage, setEditingCarouselImage] = useState<CarouselImage | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const carouselFileInputRef = useRef<HTMLInputElement>(null);
   
+  const handleUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+        const url = await uploadImage(file, 'settings/');
+        toast({ title: "تم رفع الصورة بنجاح" });
+        return url;
+    } catch (error) {
+        toast({ title: "فشل رفع الصورة", variant: "destructive" });
+        throw error;
+    } finally {
+        setIsUploading(false);
+    }
+  };
+
   const settingsForm = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
@@ -134,7 +187,7 @@ export default function SettingsPage() {
           adHeight: specialAds?.adHeight || 256,
           adPosition: specialAds?.adPosition || 'bottom-left',
       };
-      settingsForm.reset(settingsData);
+      settingsForm.reset(settingsData as any);
       setCarouselImages(carouselData || []);
 
     } catch (error) {
@@ -202,6 +255,18 @@ export default function SettingsPage() {
     }
   };
 
+  const handleCarouselFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        try {
+            const url = await handleUpload(file);
+            carouselForm.setValue('imageUrl', url);
+        } catch (error) {
+            console.error("Upload failed", error);
+        }
+    }
+  };
+
   const handleCarouselSubmit = async (values: z.infer<typeof carouselImageSchema>) => {
     setIsCarouselSubmitting(true);
     let updatedImages: CarouselImage[];
@@ -212,8 +277,6 @@ export default function SettingsPage() {
     };
 
     if (editingCarouselImage) {
-        // Use a more reliable unique identifier if available, like an ID.
-        // If imageUrl is the only unique thing, this is okay.
         updatedImages = carouselImages.map(img => 
             img.imageUrl === editingCarouselImage.imageUrl ? { ...editingCarouselImage, ...newValues } : img
         );
@@ -304,7 +367,12 @@ export default function SettingsPage() {
                                             <DialogTitle>{editingCarouselImage ? 'تعديل صورة الكاروسيل' : 'إضافة صورة جديدة للكاروسيل'}</DialogTitle>
                                         </DialogHeader>
                                         <FormField control={carouselForm.control} name="imageUrl" render={({ field }) => (
-                                            <FormItem><FormLabel>رابط الصورة</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                                            <ImageUploadField 
+                                                field={field} 
+                                                label="الصورة"
+                                                onUpload={handleUpload}
+                                                isUploading={isUploading}
+                                            />
                                         )}/>
                                          <FormField control={carouselForm.control} name="linkUrl" render={({ field }) => (
                                             <FormItem><FormLabel>الرابط (عند الضغط على الصورة)</FormLabel><FormControl><Input {...field} placeholder="اختياري، مثال: /products/some-product"/>
@@ -338,7 +406,7 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className='space-y-4'>
                     <FormField control={settingsForm.control} name="headerLogo" render={({ field }) => (
-                        <FormItem><FormLabel>رابط شعار الهيدر</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <ImageUploadField field={field} label="شعار الهيدر" onUpload={handleUpload} isUploading={isUploading} />
                     )}/>
                     <div className="grid grid-cols-2 gap-4">
                         <FormField control={settingsForm.control} name="headerLogoWidth" render={({ field }) => (
@@ -349,7 +417,7 @@ export default function SettingsPage() {
                         )}/>
                     </div>
                      <FormField control={settingsForm.control} name="footerLogo" render={({ field }) => (
-                        <FormItem><FormLabel>رابط شعار الفوتر</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <ImageUploadField field={field} label="شعار الفوتر" onUpload={handleUpload} isUploading={isUploading} />
                     )}/>
                      <div className="grid grid-cols-2 gap-4">
                         <FormField control={settingsForm.control} name="footerLogoWidth" render={({ field }) => (
@@ -360,7 +428,7 @@ export default function SettingsPage() {
                         )}/>
                     </div>
                     <FormField control={settingsForm.control} name="homeImage" render={({ field }) => (
-                        <FormItem><FormLabel>رابط صورة الخلفية الرئيسية (Hero)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                       <ImageUploadField field={field} label="صورة الخلفية الرئيسية (Hero)" onUpload={handleUpload} isUploading={isUploading} />
                     )}/>
                 </CardContent>
             </Card>
@@ -398,7 +466,7 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className='space-y-4'>
                     <FormField control={settingsForm.control} name="adImage" render={({ field }) => (
-                        <FormItem><FormLabel>رابط صورة الإعلان</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <ImageUploadField field={field} label="صورة الإعلان" onUpload={handleUpload} isUploading={isUploading} />
                     )}/>
                     <FormField control={settingsForm.control} name="adText" render={({ field }) => (
                         <FormItem><FormLabel>نص الإعلان</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>

@@ -16,10 +16,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getDocument, updateDocument } from '@/lib/firebase/database';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { uploadImage } from '@/lib/firebase/storage';
+import { Upload } from 'lucide-react';
+import Image from 'next/image';
 
 const contentSchema = z.object({
   // Home Page
@@ -46,6 +49,8 @@ export default function ContentManagementPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const form = useForm<ContentFormValues>({
     resolver: zodResolver(contentSchema),
@@ -87,6 +92,22 @@ export default function ContentManagementPage() {
     }
     loadContent();
   }, [form, toast]);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        setIsUploading(true);
+        try {
+            const url = await uploadImage(file, 'content/');
+            form.setValue('aboutImage', url);
+            toast({ title: "تم رفع الصورة بنجاح" });
+        } catch (error) {
+            toast({ title: "فشل رفع الصورة", variant: "destructive" });
+        } finally {
+            setIsUploading(false);
+        }
+    }
+  };
   
   const onSubmit = async (values: ContentFormValues) => {
     setIsSubmitting(true);
@@ -144,7 +165,21 @@ export default function ContentManagementPage() {
                 <CardHeader><CardTitle>محتوى صفحة "عن الشركة"</CardTitle></CardHeader>
                 <CardContent className='space-y-4'>
                     <FormField control={form.control} name="aboutImage" render={({ field }) => (
-                        <FormItem><FormLabel>رابط صورة "عن الشركة"</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                         <FormItem>
+                            <FormLabel>صورة صفحة "عن الشركة"</FormLabel>
+                            <div className="flex items-center gap-4">
+                                <FormControl>
+                                    <Input {...field} readOnly placeholder="https://..." />
+                                </FormControl>
+                                <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
+                                    <Upload className="me-2 h-4 w-4" />
+                                    {isUploading ? "جارٍ الرفع..." : "رفع صورة"}
+                                </Button>
+                                <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+                            </div>
+                            {field.value && <Image src={field.value} alt="Preview" width={100} height={100} className="mt-2 rounded-md object-contain border p-2" />}
+                            <FormMessage />
+                        </FormItem>
                     )}/>
                     <FormField control={form.control} name="aboutTitle" render={({ field }) => (
                         <FormItem><FormLabel>العنوان الرئيسي</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -182,7 +217,7 @@ export default function ContentManagementPage() {
                 </CardContent>
             </Card>
 
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || isUploading}>
                 {isSubmitting ? "جارٍ الحفظ..." : "حفظ التغييرات"}
             </Button>
         </form>
