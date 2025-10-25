@@ -4,15 +4,16 @@
 import ProductForm from '../../_components/product-form';
 import { getProductById, updateProduct } from '@/lib/firebase/database';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
-  const { id: productId } = params;
+export default function EditProductPage() {
+  const params = useParams();
+  const productId = params.id as string;
   const router = useRouter();
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
@@ -20,6 +21,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!productId) return;
     getProductById(productId)
       .then((data) => {
         if (data) {
