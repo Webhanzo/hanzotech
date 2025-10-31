@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 import { getDocument, updateDocument } from '@/lib/firebase/database';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
+import { uploadImage } from '@/lib/firebase/storage';
 
 const contentSchema = z.object({
   // Home Page
@@ -47,6 +47,7 @@ export default function ContentManagementPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   const form = useForm<ContentFormValues>({
     resolver: zodResolver(contentSchema),
@@ -111,6 +112,22 @@ export default function ContentManagementPage() {
     }
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const url = await uploadImage(file, 'content');
+      form.setValue('aboutImage', url);
+      toast({ title: 'تم رفع الصورة بنجاح!' });
+    } catch (error) {
+      toast({ title: 'فشل رفع الصورة', variant: 'destructive' });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div>
@@ -145,16 +162,39 @@ export default function ContentManagementPage() {
             <Card>
                 <CardHeader><CardTitle>محتوى صفحة "عن الشركة"</CardTitle></CardHeader>
                 <CardContent className='space-y-4'>
-                    <FormField control={form.control} name="aboutImage" render={({ field }) => (
-                         <FormItem>
-                            <FormLabel>صورة صفحة "عن الشركة"</FormLabel>
-                             <FormControl>
-                                <Input {...field} placeholder="https://..." />
-                             </FormControl>
-                            {field.value && <Image src={field.value} alt="Preview" width={100} height={100} className="mt-2 rounded-md object-contain border p-2" />}
-                            <FormMessage />
+                   <FormField
+                      control={form.control}
+                      name="aboutImage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>صورة صفحة "عن الشركة"</FormLabel>
+                          <FormControl>
+                            <div>
+                                <Input
+                                    type="file"
+                                    id="about-image-upload"
+                                    className="hidden"
+                                    onChange={handleImageUpload}
+                                    accept="image/*"
+                                    disabled={isUploading}
+                                />
+                                <label
+                                    htmlFor="about-image-upload"
+                                    className="inline-block cursor-pointer rounded-md bg-secondary px-4 py-2 text-secondary-foreground hover:bg-secondary/80"
+                                >
+                                    {isUploading ? 'جارٍ الرفع...' : 'اختر صورة'}
+                                </label>
+                                {field.value && (
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                    الرابط الحالي: <a href={field.value} target="_blank" rel="noopener noreferrer" className="underline">{field.value}</a>
+                                    </p>
+                                )}
+                            </div>
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
-                    )}/>
+                      )}
+                    />
                     <FormField control={form.control} name="aboutTitle" render={({ field }) => (
                         <FormItem><FormLabel>العنوان الرئيسي</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )}/>
