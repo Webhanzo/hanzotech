@@ -23,9 +23,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { PlusCircle, Trash2, Edit } from 'lucide-react';
+import { PlusCircle, Trash2, Edit, Upload } from 'lucide-react';
 import Image from 'next/image';
 import type { CarouselImage } from '@/lib/types';
+import { uploadToImageKit } from '@/lib/imagekit-uploader';
 
 
 // Define the schema based on the database structure
@@ -65,6 +66,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState<string | null>(null);
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
   const [isCarouselSubmitting, setIsCarouselSubmitting] = useState(false);
   const [isCarouselDialogOpen, setIsCarouselDialogOpen] = useState(false);
@@ -153,6 +155,22 @@ export default function SettingsPage() {
     loadData();
   }, []);
   
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof SettingsFormValues) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(fieldName);
+    try {
+      const url = await uploadToImageKit(file);
+      settingsForm.setValue(fieldName, url as any); // Use `any` to satisfy TypeScript for dynamic field names
+      toast({ title: `تم رفع الصورة لـ ${fieldName} بنجاح!` });
+    } catch (error) {
+      toast({ title: 'فشل رفع الصورة', description: 'يرجى التأكد من صحة إعدادات ImageKit.', variant: 'destructive' });
+    } finally {
+      setIsUploading(null);
+    }
+  };
+
   const onSettingsSubmit = async (values: SettingsFormValues) => {
     setIsSubmitting(true);
     try {
@@ -345,9 +363,32 @@ export default function SettingsPage() {
                         <FormItem>
                             <FormLabel>شعار الهيدر</FormLabel>
                             <FormControl>
-                                <Input {...field} placeholder="https://..." />
+                                <div>
+                                    <Input
+                                        id="headerLogo-upload"
+                                        type="file"
+                                        className="hidden"
+                                        onChange={(e) => handleImageUpload(e, 'headerLogo')}
+                                        accept="image/*"
+                                        disabled={isUploading === 'headerLogo'}
+                                    />
+                                    <label
+                                        htmlFor="headerLogo-upload"
+                                        className="inline-block cursor-pointer rounded-md bg-secondary px-4 py-2 text-secondary-foreground hover:bg-secondary/80"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <Upload className="h-4 w-4" />
+                                            {isUploading === 'headerLogo' ? 'جارٍ الرفع...' : 'اختر صورة'}
+                                        </div>
+                                    </label>
+                                </div>
                             </FormControl>
-                             {field.value && <Image src={field.value} alt="Preview" width={80} height={80} className="mt-2 rounded-md object-contain" />}
+                            {field.value && (
+                                <div className="mt-4">
+                                    <p className="mb-2 text-sm text-muted-foreground">الصورة الحالية:</p>
+                                    <Image src={field.value} alt="Header Logo Preview" width={80} height={80} className="rounded-md border object-contain p-2" />
+                                </div>
+                            )}
                             <FormMessage />
                         </FormItem>
                     )}/>
@@ -478,7 +519,7 @@ export default function SettingsPage() {
                 </CardContent>
             </Card>
 
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !!isUploading}>
                 {isSubmitting ? "جارٍ الحفظ..." : "حفظ التغييرات العامة"}
             </Button>
         </form>
