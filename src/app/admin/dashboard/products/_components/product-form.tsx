@@ -25,12 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Product } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
-import { useState, useRef } from 'react';
-import { uploadImage } from '@/lib/firebase/storage';
-import { Upload } from 'lucide-react';
 import Image from 'next/image';
-
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'الاسم مطلوب' }),
@@ -56,9 +51,6 @@ export default function ProductForm({
   onSubmit,
   isSubmitting,
 }: ProductFormProps) {
-  const { toast } = useToast();
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
@@ -78,23 +70,6 @@ export default function ProductForm({
           featured2: false,
         },
   });
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-        setIsUploading(true);
-        try {
-            const url = await uploadImage(file, 'products/');
-            form.setValue('image', url);
-            toast({ title: "تم رفع الصورة بنجاح" });
-        } catch (error) {
-            toast({ title: "فشل رفع الصورة", variant: "destructive" });
-        } finally {
-            setIsUploading(false);
-        }
-    }
-  };
-
 
   return (
     <Form {...form}>
@@ -161,16 +136,9 @@ export default function ProductForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>صورة المنتج</FormLabel>
-              <div className="flex items-center gap-4">
-                  <FormControl>
-                      <Input placeholder="https://..." {...field} readOnly />
-                  </FormControl>
-                  <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
-                      <Upload className="me-2 h-4 w-4" />
-                      {isUploading ? "جارٍ الرفع..." : "رفع صورة"}
-                  </Button>
-                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
-              </div>
+              <FormControl>
+                <Input placeholder="https://..." {...field} />
+              </FormControl>
               {field.value && <Image src={field.value} alt="Preview" width={100} height={100} className="mt-2 rounded-md object-contain border p-2" />}
               <FormMessage />
             </FormItem>
@@ -251,7 +219,7 @@ export default function ProductForm({
             )}
           />
         </div>
-        <Button type="submit" disabled={isSubmitting || isUploading}>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
             ? product
               ? 'جارٍ التحديث...'
