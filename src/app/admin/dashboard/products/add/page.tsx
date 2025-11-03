@@ -15,7 +15,7 @@ export default function AddProductPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (values: Omit<Product, 'id' | 'slug' | 'timestamp' | 'featured'>) => {
+  const handleSubmit = async (values: Omit<Product, 'id' | 'slug' | 'timestamp' | 'featured2'>) => {
     setIsSubmitting(true);
     try {
       await addProduct(values);
